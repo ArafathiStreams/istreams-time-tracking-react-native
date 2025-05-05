@@ -55,7 +55,7 @@ const AppTabs = () => (
       tabBarStyle: styles.tabBar,
     }}
   >
-    <Tab.Screen
+    {/* <Tab.Screen
       name="Home"
       component={HomeStack}
       options={{
@@ -63,7 +63,7 @@ const AppTabs = () => (
           <Entypo name="home" size={size} color={color} />
         ),
       }}
-    />
+    /> */}
     <Tab.Screen
       name="Order"
       component={OrderStack}
