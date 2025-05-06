@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, BackHandler, Alert } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, BackHandler, Alert, Dimensions, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button } from 'react-native-paper';
@@ -10,6 +10,7 @@ import IonIcons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import { useFocusEffect } from '@react-navigation/native';
+import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
 
 const HomeScreen = () => {
     const navigation = useNavigation();
@@ -45,33 +46,45 @@ const HomeScreen = () => {
         navigation.navigate('SelfCheckout');
     };
 
-    const actions = [
+    const handleAddEmployee = () => {
+        navigation.navigate('NewEmployeeAddScreen');
+    };
+    const actions1 = [
         { icon: 'qrcode-scan', label: 'Team\nCheck-in', onPress: handleTeamCheckin },
         { icon: 'account-group', label: 'Team\nCheck-out', onPress: handleTeamCheckout },
         { icon: 'account-arrow-left', label: 'Self\nCheck-in', onPress: handleSelfCheckin },
         { icon: 'account-arrow-right', label: 'Self\nCheck-out', onPress: handleSelfCheckout },
     ];
 
+    const actions2 = [
+        { label: 'Add Employees', icon: 'user-plus', onPress:handleAddEmployee },
+        { label: 'View Attendance', icon: 'users-viewfinder', onPress: () => { } },
+        { label: 'Update Images', icon: 'images', onPress: () => { } }
+    ];
+
+    const numColumns = 3;
+    const itemWidth = Dimensions.get('window').width / numColumns - 30;
+
     useFocusEffect(
         React.useCallback(() => {
-          const onBackPress = () => {
-            Alert.alert(
-              'Exit App',
-              'Do you want to exit?',
-              [
-                { text: 'Cancel', style: 'cancel' },
-                { text: 'Yes', onPress: () => BackHandler.exitApp() },
-              ]
-            );
-            return true;
-          };
-    
-          BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    
-          return () =>
-            BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+            const onBackPress = () => {
+                Alert.alert(
+                    'Exit App',
+                    'Do you want to exit?',
+                    [
+                        { text: 'Cancel', style: 'cancel' },
+                        { text: 'Yes', onPress: () => BackHandler.exitApp() },
+                    ]
+                );
+                return true;
+            };
+
+            BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+            return () =>
+                BackHandler.removeEventListener('hardwareBackPress', onBackPress);
         }, [])
-      );
+    );
 
     return (
         <View style={[GlobalStyles.pageContainer]}>
@@ -104,20 +117,37 @@ const HomeScreen = () => {
             )}
             <HomeCarousel />
 
-            <View style={styles.fullContainer}>
-                <Text style={[GlobalStyles.title1, { marginHorizontal: 16, marginBottom: 10 }]}>Attendance Capturing</Text>
-                <View style={styles.container}>
-                    {actions.map((action, index) => (
-                        <TouchableOpacity key={index} style={styles.action} onPress={action.onPress}>
-                            <View style={styles.iconWrapper}>
-                                <Icon name={action.icon} size={30} color="#fff" />
-                            </View>
-                            <Text style={styles.label}>{action.label}</Text>
-                        </TouchableOpacity>
-                    ))}
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={styles.atteElementsContainer}>
+                    <Text style={[GlobalStyles.title1, { marginHorizontal: 16, marginBottom: 10 }]}>Attendance Capturing</Text>
+                    <View style={styles.container}>
+                        {actions1.map((action, index) => (
+                            <TouchableOpacity key={index} style={styles.action} onPress={action.onPress}>
+                                <View style={styles.iconWrapper}>
+                                    <Icon name={action.icon} size={30} color="#fff" />
+                                </View>
+                                <Text style={styles.label}>{action.label}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
                 </View>
-            </View>
 
+                <View style={styles.atteElementsContainer1}>
+                    <Text style={[styles.title1, { marginHorizontal: 16, marginBottom: 10 }]}>
+                        Get Loan, Invest Money
+                    </Text>
+                    <View style={styles.container1}>
+                        {actions2.map((action2, index) => (
+                            <TouchableOpacity key={index} style={[styles.action1, { width: itemWidth }]} onPress={action2.onPress}>
+                                <View style={styles.iconWrapper1}>
+                                    <FontAwesome6Icon name={action2.icon} size={28} color="#fff" />
+                                </View>
+                                <Text style={styles.label1}>{action2.label}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
+            </ScrollView>
         </View>
     );
 };
@@ -149,7 +179,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
-    fullContainer: {
+    atteElementsContainer: {
         paddingVertical: 16,
         backgroundColor: '#fff',
         borderRadius: 16,
@@ -195,5 +225,40 @@ const styles = StyleSheet.create({
     },
     btnlogout: {
         backgroundColor: 'red',
-    }
+    },
+
+    atteElementsContainer1: {
+        paddingVertical: 10,
+        backgroundColor: '#f0f8ff',
+        borderRadius: 16,
+        marginBottom: 50
+    },
+    title1: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    container1: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+    },
+    action1: {
+        alignItems: 'center',
+        margin: 10,
+        backgroundColor: '#fff',
+        padding: 12,
+        borderRadius: 12,
+        elevation: 3,
+    },
+    iconWrapper1: {
+        backgroundColor: '#144f76',
+        padding: 10,
+        borderRadius: 39,
+        marginBottom: 8,
+    },
+    label1: {
+        fontSize: 12,
+        textAlign: 'center',
+        color: '#333',
+    },
 });

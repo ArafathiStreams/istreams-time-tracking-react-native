@@ -10,6 +10,7 @@ import TeamCheckout from './src/screen/TeamCheckout';
 import TeamCheckoutEmployees from './src/screen/TeamCheckoutEmployees';
 import SelfCheckin from './src/screen/SelfCheckin';
 import SelfCheckout from './src/screen/SelfCheckout';
+import NewEmployeeAddScreen from './src/screen/NewEmployeeAddScreen';
 import CaptureImageScreen from './src/components/CaptureImageScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -123,6 +124,7 @@ const AppNavigator = () => {
           <Stack.Screen name="TeamCheckoutEmployees" component={TeamCheckoutEmployees} />
           <Stack.Screen name="SelfCheckin" component={SelfCheckin} />
           <Stack.Screen name="SelfCheckout" component={SelfCheckout} />
+          <Stack.Screen name="NewEmployeeAddScreen" component={NewEmployeeAddScreen} />
         </>
       )}
     </Stack.Navigator>

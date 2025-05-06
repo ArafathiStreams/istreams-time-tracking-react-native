@@ -31,7 +31,7 @@ const HomeCarousel = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     return (
-        <View>
+        <View style={styles.carouselContainer}>
             <Carousel
                 loop
                 width={width * 0.95}
