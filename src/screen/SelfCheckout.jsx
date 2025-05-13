@@ -1,14 +1,24 @@
-import React, { useState } from 'react';
-import { Text, View, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, View, StyleSheet } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
 import Header from '../components/Header';
-import CheckinComponent from '../components/CheckinComponent';
 import { GlobalStyles } from '../Styles/styles';
-import GlobalVariables from '../../iStServices/GlobalVariables';
 import * as FileSystem from 'expo-file-system';
 import { SaveAttendance } from '../../iStClasses/SaveAttendance';
+import { useNavigation } from '@react-navigation/native';
+import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
+import ProjectListPopup from '../../Popup/ProjectListPopUp';
+import { LocationService } from '../../iStServices/LocationService';
+import { formatDate, formatTime } from '../Utils/dataTimeUtils';
+import { handleCaptureImage } from '../Utils/captureImageUtils';
+import { ImageRecognition } from '../Utils/ImageRecognition';
+import ImageRecognitionResult from '../components/ImageRecognitionResult';
+import * as ImagePicker from 'expo-image-picker';
 
 const SelfCheckout = () => {
+    const [isPopupVisible, setPopupVisible] = useState(false);
+    const navigation = useNavigation();
+    const [btnloading, setbtnLoading] = useState(false);
     const [entryDate, setEntryDate] = useState('');
     const [entryTime, setEntryTime] = useState('');
     const [projectNo, setProjectNo] = useState('');
@@ -16,9 +26,14 @@ const SelfCheckout = () => {
     const [empTeamImage, setEmpTeamImage] = useState(null);
     const [coordinates, setCoordinates] = useState('');
     const [locationName, setLocationName] = useState('Fetching location...');
+    const [recogloading, setrecogLoading] = useState(false);
+    const [matchingFaceNames, setMatchingFaceNames] = useState([]);
+    const [cleanedMatchNames, setCleanedMatchNames] = useState([]);
+    const [groupedData, setgroupedData] = useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
     const TrackingStatus = 'checkout';
     const [base64Img, setBase64Img] = useState(null);
-    let selectedEmp = GlobalVariables.EMP_NO;
+    const [selectedEmp, setSelectedEmp] = useState('');
 
     const handleProjectSelect = (project) => {
         setProjectNo(project.PROJECT_NO);
@@ -31,11 +46,46 @@ const SelfCheckout = () => {
         });
     };
 
-    const SaveSelfCheckout = async () => {
-        const Base64Img = await convertUriToBase64(empTeamImage);
-        setBase64Img(Base64Img);
+    const preferredCamera = ImagePicker.CameraType.front;
 
-        selectedEmp = `<string>${GlobalVariables.EMP_NO}</string>`
+    useEffect(() => {
+        handleCaptureImage(setEmpTeamImage, preferredCamera);
+
+        LocationService(setLocationName, setCoordinates);
+
+        const now = new Date();
+        setEntryDate(formatDate(now));
+        setEntryTime(formatTime(now));
+    }, []);
+
+    useEffect(() => {
+        if (empTeamImage) {
+            ImageRecognition(
+                empTeamImage,
+                setrecogLoading,
+                setBase64Img,
+                setMatchingFaceNames,
+                setCleanedMatchNames,
+                setgroupedData,
+                setErrorMessage
+            );
+        }
+    }, [empTeamImage]);
+
+    useEffect(() => {
+        if (groupedData && groupedData.length > 0) {
+            const empNo = groupedData.flatMap(item => item.data.map(i => i.EMP_NO));
+            setSelectedEmp(empNo);
+        }
+    }, [groupedData]);
+
+    const SaveSelfCheckout = async () => {
+        setbtnLoading(true);
+        const base64 = await convertUriToBase64(empTeamImage);
+        setBase64Img(base64);
+
+        const empData = `<string>${selectedEmp}</string>`;
+
         try {
             await SaveAttendance({
                 projectNo,
@@ -44,11 +94,13 @@ const SelfCheckout = () => {
                 entryTime,
                 coordinates,
                 TrackingStatus,
-                empTeamImage,
-                selectedEmp,
-                base64Img,
+                selectedEmp: empData,
+                base64Img: base64Img,
+                navigation
             });
+            setbtnLoading(false);
         } catch (error) {
+            setbtnLoading(false);
             console.error('Error saving Checkin data:', error);
         }
     };
@@ -56,37 +108,77 @@ const SelfCheckout = () => {
         <View style={GlobalStyles.pageContainer}>
             <Header title="Self Check-Out" />
 
-            <ScrollView>
-                <Text style={[GlobalStyles.subtitle, { marginBottom: 10 }]}>Check-Out Employee</Text>
-                <TextInput
-                    mode="outlined"
-                    label="Emp No"
-                    value={GlobalVariables.EMP_NO}
-                    editable={false} />
-                <CheckinComponent
-                    entryDate={entryDate}
-                    setEntryDate={setEntryDate}
-                    entryTime={entryTime}
-                    setEntryTime={setEntryTime}
-                    projectNo={projectNo}
-                    projectName={projectName}
-                    empTeamImage={empTeamImage}
-                    setEmpTeamImage={setEmpTeamImage}
-                    coordinates={coordinates}
-                    setCoordinates={setCoordinates}
-                    locationName={locationName}
-                    setLocationName={setLocationName}
-                    onProjectSelect={handleProjectSelect} />
-            </ScrollView>
+            <View style={{ flex: 1 }}>
+                <View style={GlobalStyles.locationContainer}>
+                    <FontAwesome6Icon name="location-dot" size={20} color="#70706d" />
+                    <Text style={[GlobalStyles.subtitle, { marginLeft: 5 }]}>{locationName}</Text>
+                </View>
+
+                <View style={[GlobalStyles.twoInputContainer, { marginTop: 10 }]}>
+                    <View style={GlobalStyles.container1}>
+                        <TextInput
+                            mode="outlined"
+                            label="Entry Date"
+                            value={entryDate}
+                            editable={false}
+                            onPressIn={() => setShowDatePicker(true)}
+                        />
+                    </View>
+
+                    <View style={GlobalStyles.container2}>
+                        <TextInput
+                            mode="outlined"
+                            label="Entry Time"
+                            value={entryTime}
+                            editable={false}
+                            onPressIn={() => setShowTimePicker(true)}
+                        />
+                    </View>
+                </View>
+
+                <Text style={[GlobalStyles.subtitle_1, { marginTop: 10 }]}>Project Details</Text>
+                <View>
+                    <TextInput
+                        mode="outlined"
+                        label="Project No"
+                        onPressIn={() => setPopupVisible(true)}
+                        value={projectNo}
+                        style={{ width: '70%', marginTop: 5 }}
+                        placeholder="Enter Project No"
+                        showSoftInputOnFocus={false} />
+                    <ProjectListPopup
+                        visible={isPopupVisible}
+                        onClose={() => setPopupVisible(false)}
+                        onSelect={(project) => {
+                            handleProjectSelect(project);
+                            setPopupVisible(false);
+                        }}
+                    />
+                    <TextInput
+                        mode="outlined"
+                        label="Project Name"
+                        value={projectName}
+                        showSoftInputOnFocus={false}
+                        placeholder="Enter Project Name" />
+                </View>
+
+                <ImageRecognitionResult
+                    recogloading={recogloading}
+                    groupedData={groupedData}
+                />
+            </View>
 
             <View style={GlobalStyles.bottomButtonContainer}>
-                <Button mode="contained" onPress={SaveSelfCheckout}>
+                <Button mode="contained" 
+                onPress={SaveSelfCheckout}
+                loading={btnloading}
+                disabled={btnloading}>
                     Save
                 </Button>
             </View>
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
 

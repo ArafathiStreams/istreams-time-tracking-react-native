@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, SectionList } from 'react-native';
-import { Button, TextInput, ActivityIndicator } from 'react-native-paper';
+import { Text, View, StyleSheet } from 'react-native';
+import { Button, TextInput } from 'react-native-paper';
 import Header from '../components/Header';
 import { GlobalStyles } from '../Styles/styles';
-import GlobalVariables from '../../iStServices/GlobalVariables';
 import * as FileSystem from 'expo-file-system';
 import { SaveAttendance } from '../../iStClasses/SaveAttendance';
 import { useNavigation } from '@react-navigation/native';
@@ -14,10 +13,12 @@ import { formatDate, formatTime } from '../Utils/dataTimeUtils';
 import { handleCaptureImage } from '../Utils/captureImageUtils';
 import { ImageRecognition } from '../Utils/ImageRecognition';
 import ImageRecognitionResult from '../components/ImageRecognitionResult';
+import * as ImagePicker from 'expo-image-picker';
 
 const SelfCheckin = () => {
     const [isPopupVisible, setPopupVisible] = useState(false);
     const navigation = useNavigation();
+    const [btnloading, setbtnLoading] = useState(false);
     const [entryDate, setEntryDate] = useState('');
     const [entryTime, setEntryTime] = useState('');
     const [projectNo, setProjectNo] = useState('');
@@ -45,8 +46,10 @@ const SelfCheckin = () => {
         });
     };
 
+    const preferredCamera = ImagePicker.CameraType.front;
+
     useEffect(() => {
-        handleCaptureImage(setEmpTeamImage);
+        handleCaptureImage(setEmpTeamImage, preferredCamera);
 
         LocationService(setLocationName, setCoordinates);
 
@@ -77,11 +80,11 @@ const SelfCheckin = () => {
     }, [groupedData]);
 
     const SaveSelfCheckin = async () => {
+        setbtnLoading(true);
         const base64 = await convertUriToBase64(empTeamImage);
         setBase64Img(base64);
 
         const empData = `<string>${selectedEmp}</string>`;
-        console.log(empData);
         try {
             await SaveAttendance({
                 projectNo,
@@ -94,7 +97,9 @@ const SelfCheckin = () => {
                 base64Img: base64Img,
                 navigation
             });
+            setbtnLoading(false);
         } catch (error) {
+            setbtnLoading(false);
             console.error('Error saving Checkin data:', error);
         }
     };
@@ -102,7 +107,7 @@ const SelfCheckin = () => {
     return (
         <View style={GlobalStyles.pageContainer}>
             <Header title="Self Check-In" />
-            <View style={{flex:1}}>
+            <View style={{ flex: 1 }}>
                 <View style={GlobalStyles.locationContainer}>
                     <FontAwesome6Icon name="location-dot" size={20} color="#70706d" />
                     <Text style={[GlobalStyles.subtitle, { marginLeft: 5 }]}>{locationName}</Text>
@@ -163,7 +168,10 @@ const SelfCheckin = () => {
             </View>
 
             <View style={GlobalStyles.bottomButtonContainer}>
-                <Button mode="contained" onPress={SaveSelfCheckin}>
+                <Button mode="contained"
+                    onPress={SaveSelfCheckin}
+                    disabled={btnloading}
+                    loading={btnloading}>
                     Save
                 </Button>
             </View>

@@ -16,7 +16,7 @@ import ImageRecognitionResult from '../components/ImageRecognitionResult';
 const TeamCheckinEmployees = () => {
     const navigation = useNavigation();
     const route = useRoute();
-
+    const [btnloading, setbtnLoading] = useState(false);
     const [loading, setLoading] = useState(false);
     const [base64Img, setBase64Img] = useState(null);
     const { projectNo, projectName, empTeamImage,
@@ -33,10 +33,6 @@ const TeamCheckinEmployees = () => {
         try {
             setLoading(true);
             const EmployeeListWithImages = [];
-
-            // Optional: establish SOAP connection first
-            const doConn_parameters = { LoginUserName: GlobalVariables.Login_Username };
-            await callSoapService(GlobalVariables.Client_URL, 'doConnection', doConn_parameters);
 
             for (const emp of employees) {
                 let empImage = null;
@@ -88,6 +84,7 @@ const TeamCheckinEmployees = () => {
     };
 
     const SaveTeamCheckin = async () => {
+        setbtnLoading(true);
         const empData = selectedEmp
             .map(emp => emp.EMP_NO ? `<string>${emp.EMP_NO}</string>` : '')
             .join('');
@@ -107,7 +104,10 @@ const TeamCheckinEmployees = () => {
                 base64Img: base64Img,
                 navigation
             });
+
+            setbtnLoading(false);
         } catch (error) {
+            setbtnLoading(false);
             console.error('Error saving Checkin data:', error);
         }
     };
@@ -151,7 +151,9 @@ const TeamCheckinEmployees = () => {
 
                 <View style={GlobalStyles.bottomButtonContainer}>
                     <Button mode="contained"
-                        onPress={SaveTeamCheckin}>
+                        onPress={SaveTeamCheckin}
+                        disabled={btnloading}
+                        loading={btnloading}>
                         Save
                     </Button>
                 </View>

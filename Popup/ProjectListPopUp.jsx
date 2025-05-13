@@ -2,9 +2,7 @@ import React from 'react';
 import { Modal, View, Text, TouchableOpacity, FlatList, StyleSheet, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
-import Fontisto from 'react-native-vector-icons/Fontisto';
 import { Searchbar } from 'react-native-paper';
-
 
 const ProjectListPopup = ({ visible, onClose, onSelect }) => {
     const [projects, setProjects] = useState([]);

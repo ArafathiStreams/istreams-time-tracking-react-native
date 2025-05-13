@@ -11,7 +11,9 @@ import TeamCheckoutEmployees from './src/screen/TeamCheckoutEmployees';
 import SelfCheckin from './src/screen/SelfCheckin';
 import SelfCheckout from './src/screen/SelfCheckout';
 import NewEmployeeAddScreen from './src/screen/NewEmployeeAddScreen';
+import ChangeEmpImageScreen from './src/screen/ChangeEmpImageScreen';
 import CaptureImageScreen from './src/components/CaptureImageScreen';
+import SwitchUpdateImageScreen from './src/screen/SwitchUpdateImageScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -125,6 +127,8 @@ const AppNavigator = () => {
           <Stack.Screen name="SelfCheckin" component={SelfCheckin} />
           <Stack.Screen name="SelfCheckout" component={SelfCheckout} />
           <Stack.Screen name="NewEmployeeAddScreen" component={NewEmployeeAddScreen} />
+          <Stack.Screen name="ChangeEmpImageScreen" component={ChangeEmpImageScreen} />
+          <Stack.Screen name="SwitchUpdateImageScreen" component={SwitchUpdateImageScreen} />
         </>
       )}
     </Stack.Navigator>

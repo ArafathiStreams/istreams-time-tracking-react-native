@@ -12,6 +12,9 @@ export const loginBLL = async (username, password) => {
     const doConn_parameters = {
         LoginUserName: username,
     };
+
+    GlobalVariables.doConnectionParameter = doConn_parameters;
+    
     try {
         const Public_doConnResponse = await callSoapService(Public_ServiceURL, 'doConnection', doConn_parameters);
 

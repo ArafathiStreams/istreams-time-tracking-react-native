@@ -29,7 +29,7 @@ import {
       }
     };
   
-    const handlePickImage = async (source) => {
+    const handlePickImage = async (source, cameraType) => {
       let result;
   
       if (source === 'camera') {
@@ -40,7 +40,8 @@ import {
         }
         result = await ImagePicker.launchCameraAsync({
           allowsEditing : false,
-          quality: 0.3,
+          quality: 0.2,
+          cameraType : cameraType,
         });
       } else {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();

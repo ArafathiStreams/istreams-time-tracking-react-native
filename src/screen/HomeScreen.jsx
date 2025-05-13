@@ -49,6 +49,10 @@ const HomeScreen = () => {
     const handleAddEmployee = () => {
         navigation.navigate('NewEmployeeAddScreen');
     };
+
+    const handleChangeEmpImage = () => {
+        navigation.navigate('SwitchUpdateImageScreen');
+    };
     const actions1 = [
         { icon: 'qrcode-scan', label: 'Team\nCheck-in', onPress: handleTeamCheckin },
         { icon: 'account-group', label: 'Team\nCheck-out', onPress: handleTeamCheckout },
@@ -57,9 +61,9 @@ const HomeScreen = () => {
     ];
 
     const actions2 = [
-        { label: 'Add Employees', icon: 'user-plus', onPress:handleAddEmployee },
+        { label: 'Add New Employee', icon: 'user-plus', onPress:handleAddEmployee },
+        { label: 'Change Employee Image', icon: 'images', onPress: handleChangeEmpImage },
         { label: 'View Attendance', icon: 'users-viewfinder', onPress: () => { } },
-        { label: 'Update Images', icon: 'images', onPress: () => { } }
     ];
 
     const numColumns = 3;
@@ -140,7 +144,7 @@ const HomeScreen = () => {
                         {actions2.map((action2, index) => (
                             <TouchableOpacity key={index} style={[styles.action1, { width: itemWidth }]} onPress={action2.onPress}>
                                 <View style={styles.iconWrapper1}>
-                                    <FontAwesome6Icon name={action2.icon} size={28} color="#fff" />
+                                    <FontAwesome6Icon name={action2.icon} size={25} color="#fff" />
                                 </View>
                                 <Text style={styles.label1}>{action2.label}</Text>
                             </TouchableOpacity>
@@ -257,8 +261,8 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     label1: {
-        fontSize: 12,
+        fontSize: 14,
         textAlign: 'center',
-        color: '#333',
+        fontWeight: '600',
     },
 });

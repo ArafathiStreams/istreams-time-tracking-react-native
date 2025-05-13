@@ -7,6 +7,7 @@ import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
 import ProjectListPopup from '../../Popup/ProjectListPopUp';
 import { formatDate, formatTime } from '../Utils/dataTimeUtils';
 import { handleCaptureImage } from '../Utils/captureImageUtils';
+import * as ImagePicker from 'expo-image-picker';
 
 const CheckinComponent = ({
     entryDate,
@@ -23,6 +24,8 @@ const CheckinComponent = ({
     onProjectSelect,
 }) => {
     const [isPopupVisible, setPopupVisible] = useState(false);
+
+    const preferredCamera = ImagePicker.CameraType.back;
 
     useEffect(() => {
         LocationService(setLocationName,setCoordinates);
@@ -87,7 +90,7 @@ const CheckinComponent = ({
                     placeholder="Enter Project Name" />
             </View>
             <View style={GlobalStyles.camButtonContainer}>
-                <Button icon="camera" mode="contained-tonal" onPress={() => handleCaptureImage(setEmpTeamImage)}>
+                <Button icon="camera" mode="contained-tonal" onPress={() => handleCaptureImage(setEmpTeamImage, preferredCamera)}>
                     Capture Image
                 </Button>
             </View>

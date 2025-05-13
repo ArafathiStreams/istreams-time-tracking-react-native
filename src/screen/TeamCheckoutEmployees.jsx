@@ -12,6 +12,7 @@ import * as FileSystem from 'expo-file-system';
 const TeamCheckoutEmployees = () => {
     const route = useRoute();
     const { projectNo, chosenCheckinDate, entryDate, entryTime, coordinates, locationName, empTeamImage } = route.params || {};
+    const [btnloading, setbtnLoading] = useState(false);
     const [loading, setLoading] = useState(false);
     const [checkinEmp, setcheckinEmp] = useState([]);
     const [checkedItems, setCheckedItems] = useState({});
@@ -24,11 +25,6 @@ const TeamCheckoutEmployees = () => {
             const EmployeeListWithImages = [];
 
             try {
-                // Optional: establish SOAP connection first
-                const doConn_parameters = { LoginUserName: GlobalVariables.Login_Username };
-
-                await callSoapService(GlobalVariables.Client_URL, 'doConnection', doConn_parameters);
-
                 const retCheckinEmp_parameters = {
                     LogDate: chosenCheckinDate,
                     PROJECT_NO: projectNo
@@ -103,6 +99,7 @@ const TeamCheckoutEmployees = () => {
         }
     };
     const SaveTeamCheckout = async () => {
+        setbtnLoading(true);
         const selectedEmp = checkinEmp.filter(emp => checkedItems[emp.emp_no]);
 
         if (selectedEmp.length === 0) {
@@ -126,7 +123,10 @@ const TeamCheckoutEmployees = () => {
                 selectedEmp: empData,
                 base64Img,
             });
+
+            setbtnLoading(false);
         } catch (error) {
+            setbtnLoading(false);
             console.error('Error saving Checkout data:', error);
         }
     };
@@ -175,7 +175,9 @@ const TeamCheckoutEmployees = () => {
 
             <View style={GlobalStyles.bottomButtonContainer}>
                 <Button mode="contained"
-                    onPress={SaveTeamCheckout}>
+                    onPress={SaveTeamCheckout}
+                    loading={btnloading}
+                    disabled={btnloading}>
                     Save
                 </Button>
             </View>

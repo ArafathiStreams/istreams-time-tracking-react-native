@@ -11,7 +11,7 @@ export const SaveAttendance = async ({
     selectedEmp,
     base64Img,
     navigation
-}) => {    
+}) => {
     try {
         const Attendance_parameters = {
             CompanyCode: GlobalVariables.CompanyCode,
@@ -28,11 +28,8 @@ export const SaveAttendance = async ({
             EmpData: selectedEmp
         };
         
-        const doConn_parameters = { LoginUserName: GlobalVariables.Login_Username };
-        await callSoapService(GlobalVariables.Client_URL, 'doConnection', doConn_parameters);
-
         const empAttendance = await callSoapService(GlobalVariables.Client_URL, 'AddAttendance', Attendance_parameters);
-        
+
         if (Number.isInteger(empAttendance)) {
             const AttendanceImg_parameters = {
                 CompanyCode: GlobalVariables.CompanyCode,
@@ -41,9 +38,11 @@ export const SaveAttendance = async ({
                 ImageData: base64Img,
                 ImageExtension: 'jpeg',
             };
-            
+
             const empAttendanceImg = await callSoapService(GlobalVariables.Client_URL, 'AddAttendance_Image', AttendanceImg_parameters);
-            
+
+            console.log(empAttendanceImg);
+
             if (empAttendanceImg === null) {
                 alert('Attendance Capture Failed');
             } else {
@@ -52,6 +51,8 @@ export const SaveAttendance = async ({
             }
         }
     } catch (error) {
-        console.error('Error during saveTeamCheckin:', error);
+        console.error('Status:', error.response?.status);
+        console.error('Data:', error.response?.data);
+        console.error('Headers:', error.response?.headers);
     }
 };
