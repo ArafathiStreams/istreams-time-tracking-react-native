@@ -4,11 +4,18 @@ import {
     Text,
     SectionList,
     ActivityIndicator,
-    StyleSheet,
+    StyleSheet
 } from 'react-native';
 import EmployeeListCard from './EmployeeListCard';
+import { useNavigation } from '@react-navigation/native';
 
 const ImageRecognitionResult = ({ recogloading, groupedData }) => {
+    const navigation = useNavigation();
+
+    const handleAddEmployee = () => {
+            navigation.navigate('UpdateNonMatchedEmpScreen');
+    };
+
     return (
         <View style={styles.employeeListContainer}>
             {recogloading ? (
@@ -32,10 +39,11 @@ const ImageRecognitionResult = ({ recogloading, groupedData }) => {
                             {title}
                         </Text>
                     )}
-                    renderItem={({ item }) => (
+                    renderItem={({ item, section }) => (
                         <EmployeeListCard
                             loading={false}
-                            selectedEmp={[item]} // You already have a FlatList inside
+                            selectedEmp={[item]}
+                            onPress={section.title === 'Non-Matched Faces' ? () => handleAddEmployee() : null}
                         />
                     )}
                 />
@@ -50,5 +58,25 @@ const styles = StyleSheet.create({
     loaderContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-    }
-})
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    popupContainer: {
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 20,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 20,
+        gap: 10,
+    },
+    popupHeader: {
+        alignItems: 'center',
+    },
+});
