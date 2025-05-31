@@ -1,8 +1,9 @@
 import React from 'react';
-import { Modal, View, Text, TouchableOpacity, FlatList, StyleSheet, TextInput } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 import { Searchbar } from 'react-native-paper';
+import { GlobalStyles } from '../src/Styles/styles';
 
 const ProjectListPopup = ({ visible, onClose, onSelect }) => {
     const [projects, setProjects] = useState([]);
@@ -63,8 +64,8 @@ const ProjectListPopup = ({ visible, onClose, onSelect }) => {
                             style={styles.item}
                             onPress={() => onSelect(item)}
                         >
-                            <Text style={styles.txtProjectNo}>{item.PROJECT_NO}</Text>
-                            <Text style={styles.txtProjectName}>{item.PROJECT_NAME}</Text>
+                            <Text style={[GlobalStyles.subtitle_3, {color: '#0685de'}]}>{item.PROJECT_NO}</Text>
+                            <Text style={GlobalStyles.subtitle_2}>{item.PROJECT_NAME}</Text>
                         </TouchableOpacity>
                     )}
                 />
@@ -98,15 +99,6 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginBottom: 5,
         backgroundColor: '#fff',
-    },
-    txtProjectNo: {
-        fontSize: 15,
-        fontWeight: 'bold',
-        color: '#0685de',
-    },
-    txtProjectName: {
-        fontSize: 16,
-        fontWeight: '500',
     },
     inputContainer: {
         marginVertical: 10,

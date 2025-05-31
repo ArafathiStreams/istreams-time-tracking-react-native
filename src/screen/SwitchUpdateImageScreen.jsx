@@ -5,6 +5,7 @@ import EmployeeAddComponent from '../components/EmployeeAddComponent';
 import Header from '../components/Header';
 import GlobalVariables from '../../iStServices/GlobalVariables';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GlobalStyles } from '../Styles/styles';
 
 const SwitchUpdateImageScreen = () => {
     const [selectedSection, setSelectedSection] = useState('section1');
@@ -40,7 +41,7 @@ const SwitchUpdateImageScreen = () => {
                 >
                     <Text
                         style={[
-                            styles.text,
+                            GlobalStyles.subtitle_3,
                             selectedSection === 'section1' ? styles.activeText : styles.inactiveText,
                         ]}
                     >
@@ -58,7 +59,7 @@ const SwitchUpdateImageScreen = () => {
                 >
                     <Text
                         style={[
-                            styles.text,
+                            GlobalStyles.subtitle_3,
                             selectedSection === 'section2' ? styles.activeText : styles.inactiveText,
                         ]}
                     >
@@ -116,9 +117,6 @@ const styles = StyleSheet.create({
     },
     inactiveButton: {
         backgroundColor: 'transparent',
-    },
-    text: {
-        fontWeight: 'bold',
     },
     activeText: {
         color: '#fff',

@@ -4,6 +4,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, Checkbox, Searchbar } from 'react-native-paper';
 import Header from './Header';
+import { GlobalStyles } from '../Styles/styles';
 
 const EmployeeList = () => {
     const [loading, setLoading] = useState(true);
@@ -52,9 +53,9 @@ const EmployeeList = () => {
 
     // Filter employees based on the search query
     const filteredEmployees = employees.filter(emp => {
-        const empName = emp.EMP_NAME || ''; // Default to an empty string if null/undefined
-        const empNo = emp.EMP_NO ? emp.EMP_NO.toString() : ''; // Convert to string or default to empty
-        const designation = emp.DESIGNATION || ''; // Default to an empty string if null/undefined
+        const empName = emp.EMP_NAME || ''; 
+        const empNo = emp.EMP_NO ? emp.EMP_NO.toString() : ''; 
+        const designation = emp.DESIGNATION || ''; 
 
         return (
             empName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -75,7 +76,7 @@ const EmployeeList = () => {
             />
 
             {/* Selected Employee Count */}
-            <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>
+            <Text style={[GlobalStyles.subtitle_2, { marginBottom: 10 }]}>
                 Selected Employees: {checkedCount}
             </Text>
 
@@ -95,9 +96,9 @@ const EmployeeList = () => {
                                 style={{ width: 60, height: 60, borderRadius: 30 }}
                             />
                             <View style={styles.innerContainer}>
-                                <Text style={styles.txtEmpNo}>{item.EMP_NO}</Text>
-                                <Text style={styles.txtEmpName}>{item.EMP_NAME}</Text>
-                                <Text style={styles.txtDesignation}>{item.DESIGNATION}</Text>
+                                <Text style={GlobalStyles.txtEmpNo}>{item.EMP_NO}</Text>
+                                <Text style={GlobalStyles.txtEmpName}>{item.EMP_NAME}</Text>
+                                <Text style={GlobalStyles.txtDesignation}>{item.DESIGNATION}</Text>
                             </View>
                             <View style={styles.checkBoxSection}>
                                 <Checkbox
@@ -147,17 +148,6 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 10,
         justifyContent: 'center',
-    },
-    txtEmpNo: {
-        fontSize: 14,
-        fontWeight: 'bold',
-    },
-    txtEmpName: {
-        fontSize: 15,
-        fontWeight: "600"
-    },
-    txtDesignation: {
-        fontSize: 14,
     },
     checkBoxSection: {
         justifyContent: 'center',

@@ -6,9 +6,10 @@ import {
     ActivityIndicator,
     Image,
     StyleSheet,
+    TouchableOpacity,
 } from 'react-native';
 
-const EmployeeListCard = ({ loading, selectedEmp }) => {
+const EmployeeListCard = ({ loading, selectedEmp, onPress }) => {
     return (
         <View style={styles.employeeListContainer}>
             {loading ? (
@@ -21,7 +22,10 @@ const EmployeeListCard = ({ loading, selectedEmp }) => {
                     showsVerticalScrollIndicator={false}
                     keyExtractor={(item) => item.EMP_NO.toString()}
                     renderItem={({ item }) => (
-                        <View style={styles.container}>
+                        <TouchableOpacity 
+                            onPress={() => onPress?.(item)}
+                            disabled={!onPress}
+                            style={styles.container}>
                             <Image
                                 source={
                                     item.EMP_IMAGE
@@ -40,7 +44,7 @@ const EmployeeListCard = ({ loading, selectedEmp }) => {
                                 <Text style={styles.txtEmpName}>{item.EMP_NAME}</Text>
                                 <Text style={styles.txtDesignation}>{item.DESIGNATION}</Text>
                             </View>
-                        </View>
+                        </TouchableOpacity>
                     )}
                 />
             )}

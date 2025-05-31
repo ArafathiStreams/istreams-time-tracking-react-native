@@ -54,7 +54,7 @@ export const loginBLL = async (username, password) => {
                         EmpNo: GlobalVariables.EMP_NO,
                     };
                     try {
-                    const Client_EmpImage = await callSoapService(GlobalVariables.Client_URL, 'getpic_bytearray', empImage_parameters);
+                    const Client_EmpImage = await callSoapService(GlobalVariables.Client_URL, 'getEmpPic_bytearray_Medium', empImage_parameters);
                     
                     GlobalVariables.EMP_IMAGE_BASE64 = Client_EmpImage.trim();
                     }

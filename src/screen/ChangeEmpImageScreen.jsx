@@ -52,15 +52,15 @@ const ChangeEmpImageScreen = () => {
 
           {/* Shimmer for Inputs */}
           <View style={styles.inputContainer}>
-            <ShimmerPlaceholder LinearGradient={LinearGradient} style={styles.shimmerInput} />
-            <ShimmerPlaceholder LinearGradient={LinearGradient} style={styles.shimmerInput} />
-            <ShimmerPlaceholder LinearGradient={LinearGradient} style={styles.shimmerInput} />
+            <ShimmerPlaceholder LinearGradient={LinearGradient} style={GlobalStyles.shimmerInput} />
+            <ShimmerPlaceholder LinearGradient={LinearGradient} style={GlobalStyles.shimmerInput} />
+            <ShimmerPlaceholder LinearGradient={LinearGradient} style={GlobalStyles.shimmerInput} />
           </View>
         </ScrollView>
 
         {/* Shimmer for Button */}
         <View style={GlobalStyles.bottomButtonContainer}>
-          <ShimmerPlaceholder LinearGradient={LinearGradient} style={styles.shimmerButton} />
+          <ShimmerPlaceholder LinearGradient={LinearGradient} style={GlobalStyles.shimmerButton} />
         </View>
       </KeyboardAvoidingView>
     );
@@ -92,7 +92,7 @@ const ChangeEmpImageScreen = () => {
                 value={empNo}
                 onChangeText={setEmpNo}
                 editable={false}
-                style={[styles.input, { width: "50%" }]}
+                style={GlobalStyles.container1}
                 placeholder="Enter Emp No" />
 
               <View style={GlobalStyles.camButtonContainer}>
@@ -125,8 +125,7 @@ const ChangeEmpImageScreen = () => {
               label="Emp Name"
               value={empName}
               onChangeText={setEmpName}
-              style={styles.input}
-              editable={false}
+              style={GlobalStyles.textInput}
               placeholder="Enter Emp Name" />
 
             <TextInput
@@ -135,7 +134,6 @@ const ChangeEmpImageScreen = () => {
               value={designation}
               onChangeText={setDesignation}
               style={styles.input}
-              editable={false}
               placeholder="Enter Designation" />
           </View>
 
@@ -203,28 +201,6 @@ const styles = StyleSheet.create({
     borderColor: '#fff',
     zIndex: 10,
   },
-  shimmerInput: {
-    height: height * 0.07,
-    width: '100%',
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  shimmerText: {
-    height: 20,
-    width: '40%',
-    borderRadius: 5,
-  },
-  shimmerSwitch: {
-    height: 30,
-    width: 50,
-    borderRadius: 15,
-  },
-  shimmerButton: {
-    height: 40,
-    width: '100%',
-    borderRadius: 8,
-  },
-})
-
+});
 
 export default ChangeEmpImageScreen;

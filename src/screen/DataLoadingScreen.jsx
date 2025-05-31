@@ -4,10 +4,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { loadData } from '../../iStClasses/LoadData';
 
 const tasks = [
-    { key: 'fetchEmployees', label: 'Loading employees...' },
-    { key: 'fetchProjects', label: 'Loading projects...' },
-  ];
-  
+  { key: 'fetchEmployees', label: 'Loading employees...' },
+  { key: 'fetchProjects', label: 'Loading projects...' },
+  { key: 'fetchManpowerSuppliers', label: 'Loading manpower suppliers...' },
+];
+
 
 const DataLoadingScreen = ({ navigation }) => {
   const [completedTasks, setCompletedTasks] = useState([]);
@@ -20,7 +21,7 @@ const DataLoadingScreen = ({ navigation }) => {
       }
 
       // Navigate to the main app after tasks
-      navigation.replace('Tabs');
+      navigation.replace('AppTabs');
     };
 
     runTasks();

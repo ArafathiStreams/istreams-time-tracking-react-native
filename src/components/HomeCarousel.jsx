@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ImageBackground, Dimensions, StyleSheet } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
+import { GlobalStyles } from '../Styles/styles';
 
 const { width } = Dimensions.get('window');
 
@@ -35,7 +36,7 @@ const HomeCarousel = () => {
             <Carousel
                 loop
                 width={width * 0.95}
-                height={200}
+                height={190}
                 autoPlay={true}
                 data={carouselData}
                 autoPlayInterval={1200}
@@ -44,8 +45,8 @@ const HomeCarousel = () => {
                 renderItem={({ item, index }) => (
                     <ImageBackground source={item.image} style={styles.slide} imageStyle={styles.image}>
                         <View style={styles.overlay}>
-                            <Text style={[styles.title, index === 0 && styles.mainTitle]}>{item.title}</Text>
-                            <Text style={styles.description} numberOfLines={2}>{item.description}</Text>
+                            <Text style={[GlobalStyles.subtitle_2,{color: '#fff'}, index === 0]}>{item.title}</Text>
+                            <Text style={[GlobalStyles.content, {color: '#eee'}, index === 0]} numberOfLines={2}>{item.description}</Text>
                         </View>
 
                         {/* Dot Indicators Inside Carousel */}
@@ -81,16 +82,6 @@ const styles = StyleSheet.create({
     overlay: {
         padding: 10,
         margin: 10,
-    },
-    title: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 6
-    },
-    description: {
-        color: '#eee',
-        fontSize: 14,
     },
     dotsContainer: {
         position: 'absolute',

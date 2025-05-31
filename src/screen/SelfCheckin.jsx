@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
 import Header from '../components/Header';
 import { GlobalStyles } from '../Styles/styles';
@@ -10,10 +10,9 @@ import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
 import ProjectListPopup from '../../Popup/ProjectListPopUp';
 import { LocationService } from '../../iStServices/LocationService';
 import { formatDate, formatTime } from '../Utils/dataTimeUtils';
-import { handleCaptureImage } from '../Utils/captureImageUtils';
+import FaceDetectionModal from './FaceDetectionModal';
 import { ImageRecognition } from '../Utils/ImageRecognition';
 import ImageRecognitionResult from '../components/ImageRecognitionResult';
-import * as ImagePicker from 'expo-image-picker';
 
 const SelfCheckin = () => {
     const [isPopupVisible, setPopupVisible] = useState(false);
@@ -26,7 +25,7 @@ const SelfCheckin = () => {
     const [empTeamImage, setEmpTeamImage] = useState(null);
     const [coordinates, setCoordinates] = useState('');
     const [locationName, setLocationName] = useState('Fetching location...');
-    const [recogloading, setrecogLoading] = useState(false);
+    const [recogloading, setRecogLoading] = useState(false);
     const [matchingFaceNames, setMatchingFaceNames] = useState([]);
     const [cleanedMatchNames, setCleanedMatchNames] = useState([]);
     const [groupedData, setgroupedData] = useState([]);
@@ -34,10 +33,23 @@ const SelfCheckin = () => {
     const TrackingStatus = 'checkin';
     const [base64Img, setBase64Img] = useState(null);
     const [selectedEmp, setSelectedEmp] = useState('');
+    const [empNo, setEmpNo] = useState([]);
+    const [autosaveTriggered, setAutosaveTriggered] = useState(false);
+    const [showFaceModal, setShowFaceModal] = useState(false);
 
     const handleProjectSelect = (project) => {
         setProjectNo(project.PROJECT_NO);
         setProjectName(project.PROJECT_NAME);
+    };
+
+    const handleImageRecognition = async () => {
+        await ImageRecognition(empTeamImage,
+            setRecogLoading,
+            setBase64Img,
+            setMatchingFaceNames,
+            setCleanedMatchNames,
+            setgroupedData,
+            setErrorMessage);
     };
 
     const convertUriToBase64 = async (uri) => {
@@ -46,10 +58,8 @@ const SelfCheckin = () => {
         });
     };
 
-    const preferredCamera = ImagePicker.CameraType.front;
-
     useEffect(() => {
-        handleCaptureImage(setEmpTeamImage, preferredCamera);
+        setShowFaceModal(true);
 
         LocationService(setLocationName, setCoordinates);
 
@@ -58,34 +68,74 @@ const SelfCheckin = () => {
         setEntryTime(formatTime(now));
     }, []);
 
+    const handleFaceCaptureComplete = (data) => {
+        if (data?.capturedImage) {
+            setEmpTeamImage(data.capturedImage);
+        } else {
+            console.warn("No capturedImage found in data");
+        }
+    };
+
     useEffect(() => {
         if (empTeamImage) {
-            ImageRecognition(
-                empTeamImage,
-                setrecogLoading,
-                setBase64Img,
-                setMatchingFaceNames,
-                setCleanedMatchNames,
-                setgroupedData,
-                setErrorMessage
-            );
+            handleImageRecognition();
         }
     }, [empTeamImage]);
 
     useEffect(() => {
         if (groupedData && groupedData.length > 0) {
-            const empNo = groupedData.flatMap(item => item.data.map(i => i.EMP_NO));
-            setSelectedEmp(empNo);
+            const hasNonMatchedFaces = groupedData.some(item => item.title === "Non-Matched Faces");
+
+            if (hasNonMatchedFaces) {
+                setEmpNo([]);
+                setSelectedEmp(null);
+                navigation.navigate('FailureAnimationScreen', {
+                    message: 'No Employee Image Matched',
+                    details: 'Next employee please',
+                    returnTo: 'SelfCheckin'
+                });
+            } else {
+                const extractedEmpNos = groupedData.flatMap(item => item.data.map(i => i.EMP_NO));
+                console.log("Extracted Employee Numbers:", extractedEmpNos);
+                setEmpNo(extractedEmpNos);
+                setSelectedEmp(extractedEmpNos[0]);
+            }
         }
     }, [groupedData]);
 
-    const SaveSelfCheckin = async () => {
-        setbtnLoading(true);
-        const base64 = await convertUriToBase64(empTeamImage);
-        setBase64Img(base64);
 
-        const empData = `<string>${selectedEmp}</string>`;
+    useEffect(() => {
+        if (
+            !autosaveTriggered &&
+            empTeamImage &&
+            groupedData.length > 0 &&
+            locationName &&
+            selectedEmp?.length > 0
+        ) {
+            SaveSelfCheckin();
+            setAutosaveTriggered(true);
+        }
+    }, [empTeamImage, groupedData, locationName, selectedEmp]);
+
+
+    const SaveSelfCheckin = async () => {
+        if (!empTeamImage) {
+            alert('Missing required data. Please ensure photo is captured.');
+            return;
+        }
+        if (!selectedEmp || selectedEmp === null || selectedEmp === '') {
+            alert('UnMatched Employee Found. Add Employee and try again.');
+            return;
+        }
+
+        setbtnLoading(true);
+
         try {
+            const base64 = await convertUriToBase64(empTeamImage);
+            setBase64Img(base64);
+
+            const empData = `<string>${selectedEmp}</string>`;
+
             await SaveAttendance({
                 projectNo,
                 locationName,
@@ -95,13 +145,20 @@ const SelfCheckin = () => {
                 TrackingStatus,
                 selectedEmp: empData,
                 base64Img: base64Img,
-                navigation
+                navigation,
+                returnTo: 'SelfCheckin'
             });
-            setbtnLoading(false);
         } catch (error) {
             setbtnLoading(false);
             console.error('Error saving Checkin data:', error);
         }
+        finally {
+            setbtnLoading(false);
+        }
+    };
+
+    const reload = () => {
+        handleImageRecognition();
     };
 
     return (
@@ -161,6 +218,17 @@ const SelfCheckin = () => {
                         placeholder="Enter Project Name" />
                 </View>
 
+                <View style={[GlobalStyles.camButtonContainer, { marginBottom: 10 }]} >
+                    <Button icon={"reload"} mode="contained" title="Reload Page" onPress={reload} >Retry</Button>
+                </View>
+
+                {showFaceModal && (
+                    <FaceDetectionModal
+                        onClose={() => setShowFaceModal(false)}
+                        onCaptureComplete={handleFaceCaptureComplete}
+                    />
+                )}
+
                 <ImageRecognitionResult
                     recogloading={recogloading}
                     groupedData={groupedData}
@@ -178,9 +246,5 @@ const SelfCheckin = () => {
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-
-});
 
 export default SelfCheckin;

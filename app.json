@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera"
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera for face detection"
       }
     },
     "android": {
@@ -24,7 +24,7 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "android.permission.CAMERA"
+        "CAMERA"
       ],
       "package": "com.mohammedarafath.iStreamsTimeTracking"
     },
@@ -32,7 +32,13 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      
+      "expo-font",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow access to camera for face detection"
+        }
+      ]
     ]
   }
 }

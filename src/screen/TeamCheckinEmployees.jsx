@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, Image, FlatList, SectionList } from 'react-native';
-import { Provider as PaperProvider, Button, ActivityIndicator } from 'react-native-paper';
+import { Text, View, StyleSheet } from 'react-native';
+import { Provider as PaperProvider, Button } from 'react-native-paper';
 import Header from '../components/Header';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
@@ -63,19 +63,21 @@ const TeamCheckinEmployees = () => {
         }
     };
 
+    const handleImageRecognition = async () => {
+        await ImageRecognition(empTeamImage,
+            setrecogLoading,
+            setBase64Img,
+            setMatchingFaceNames,
+            setCleanedMatchNames,
+            setgroupedData,
+            setErrorMessage);
+    };
+
     useEffect(() => {
         if (empTeamImage) {
-            ImageRecognition(
-                empTeamImage,
-                setrecogLoading,
-                setBase64Img,
-                setMatchingFaceNames,
-                setCleanedMatchNames,
-                setgroupedData,
-                setErrorMessage
-            );
+            handleImageRecognition();
         }
-    }, []);
+    }, [empTeamImage]);
 
     const convertUriToBase64 = async (uri) => {
         return await FileSystem.readAsStringAsync(uri, {
@@ -102,7 +104,8 @@ const TeamCheckinEmployees = () => {
                 TrackingStatus,
                 selectedEmp: empData,
                 base64Img: base64Img,
-                navigation
+                navigation,
+                returnTo: 'TeamCheckin'
             });
 
             setbtnLoading(false);
@@ -112,14 +115,22 @@ const TeamCheckinEmployees = () => {
         }
     };
 
+    const reload = () => {
+        handleImageRecognition();
+    };
+
     return (
         <PaperProvider>
             <View style={GlobalStyles.pageContainer}>
                 <Header title="Add Check-in Employees" />
 
                 <View style={styles.projectContainer}>
-                    <Text style={styles.txtPrjNo}> {projectNo}</Text>
-                    <Text style={styles.txtPrjName}> {projectName}</Text>
+                    <Text style={[GlobalStyles.subtitle_2,{color: '#0685de'}]}> {projectNo}</Text>
+                    <Text style={GlobalStyles.subtitle}> {projectName}</Text>
+                </View>
+
+                <View style={[GlobalStyles.camButtonContainer, { marginBottom: 10 }]}>
+                    <Button icon={"reload"} mode="contained" title="Reload Page" onPress={reload} >Retry</Button>
                 </View>
 
                 <ImageRecognitionResult
@@ -143,7 +154,7 @@ const TeamCheckinEmployees = () => {
                     </Button>
                 </View>
 
-                <Text style={styles.txtProjDetails}>Selected Employees</Text>
+            <Text style={[GlobalStyles.subtitle_2, {color: '#0685de'}]}>Selected Employees</Text>
 
                 <View style={{ flex: 1 }}>
                     <EmployeeListCard loading={loading} selectedEmp={selectedEmp} />
@@ -169,21 +180,6 @@ const styles = StyleSheet.create({
         padding: 10,
         marginVertical: 10,
     },
-    txtProjDetails: {
-        fontSize: 16,
-        fontWeight: '700',
-        marginBottom: 5,
-        color: '#0685de',
-    },
-    txtPrjNo: {
-        fontSize: 15,
-        fontWeight: 'bold',
-        color: '#0685de',
-    },
-    txtPrjName: {
-        fontSize: 15,
-        fontWeight: "600"
-    },
-})
+});
 
 export default TeamCheckinEmployees;

@@ -58,11 +58,11 @@ const ImageEditPopUp = ({ setAvatar, empNo }) => {
         let empNoforImg = empNo;
 
         const response = await axios.delete(
-            `http://103.168.19.35:8070/api/EncodeImgToNpy/delete`,
+            `http://23.105.135.231:8082/api/EncodeImgToNpy/delete`,
             {
                 params: {
-                    domain: domainPart,
-                    filename: empNoforImg,
+                    DomainName: domainPart,
+                    EmpNo: empNoforImg,
                 },
                 headers: {
                     'accept': '*/*',
@@ -86,21 +86,21 @@ const ImageEditPopUp = ({ setAvatar, empNo }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Profile Image Actions</Text>
+            <Text style={GlobalStyles.subtitle_1}>Profile Image Actions</Text>
             <View style={styles.iconOptions}>
                 <TouchableOpacity style={styles.option} onPress={() => handlePickImage('camera')}>
                     <Feather name="camera" size={width * 0.07} color="#1c9aa5" />
-                    <Text style={styles.optionText}>Camera</Text>
+                    <Text style={[GlobalStyles.subtitle_2, styles.optionText]}>Camera</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.option} onPress={() => handlePickImage('gallery')}>
                     <MaterialIcons name="insert-photo" size={width * 0.07} color="#1c9aa5" />
-                    <Text style={styles.optionText}>Gallery</Text>
+                    <Text style={[GlobalStyles.subtitle_2, styles.optionText]}>Gallery</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.option} onPress={removeImage}>
                     <MaterialIcons name="delete" size={width * 0.07} color="#1c9aa5" />
-                    <Text style={styles.optionText}>Remove</Text>
+                    <Text style={[GlobalStyles.subtitle_2, styles.optionText]}>Remove</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -111,12 +111,6 @@ const styles = StyleSheet.create({
     container: {
         marginVertical: 20,
     },
-    title: {
-        fontSize: width * 0.045,
-        fontWeight: 'bold',
-        marginBottom: 10,
-        color: '#333',
-    },
     iconOptions: {
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -126,7 +120,6 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     optionText: {
-        fontSize: width * 0.035,
         marginTop: 5,
         color: '#333',
     },

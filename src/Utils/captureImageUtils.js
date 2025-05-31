@@ -12,25 +12,24 @@ export const handleCaptureImage = async (setImageCallback) => {
         }
 
         const result = await ImagePicker.launchCameraAsync({
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
+            allowsEditing: false,
+            quality: 0.3,
         });
 
         if (!result.canceled) {
             const imageUri = result.assets[0].uri;
-            setImageCallback(imageUri); // pass the state setter
+            setImageCallback(imageUri); 
         }
     } catch (error) {
-        Alert.alert('Error', 'Something went wrong while picking the image.');
+        Alert.alert(error, 'Something went wrong while picking the image.');
         console.error(error);
     }
 };
 
-const clearImagePickerCache = async () => {
+export const clearImagePickerCache = async () => {
     try {
         const imagePickerFolder =
-            `${FileSystem.documentDirectory}../cache/ExperienceData/%2540anonymous%252FiStreamsTimeTracking-88caeab8-90ad-4f94-b19e-6fa2dbb158eb/ImagePicker/`;
+            `${FileSystem.documentDirectory}../cache/ExperienceData/%2540anonymous%252FiStreamsTimeTracking-88caeab8-90ad-4f94-b19e-6fa2dbb158eb/`;
 
         const folderInfo = await FileSystem.getInfoAsync(imagePickerFolder);
         if (folderInfo.exists && folderInfo.isDirectory) {
@@ -40,8 +39,6 @@ const clearImagePickerCache = async () => {
                 const filePath = imagePickerFolder + file;
                 await FileSystem.deleteAsync(filePath, { idempotent: true });
             }
-
-            console.log('✅ All ImagePicker cache files deleted.');
         } else {
             console.log('❌ ImagePicker folder does not exist or is not a directory.');
         }

@@ -65,7 +65,7 @@ const LoginScreen = ({ navigation, setIsLoggedIn }) => {
                         navigation.dispatch(
                             CommonActions.reset({
                               index: 0,
-                              routes: [{ name: 'Tabs' }],
+                              routes: [{ name: 'AppTabs' }],
                             })
                           );
                     }

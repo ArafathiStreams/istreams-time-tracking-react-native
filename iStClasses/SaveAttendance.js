@@ -10,7 +10,8 @@ export const SaveAttendance = async ({
     TrackingStatus,
     selectedEmp,
     base64Img,
-    navigation
+    navigation,
+    returnTo
 }) => {
     try {
         const Attendance_parameters = {
@@ -41,13 +42,15 @@ export const SaveAttendance = async ({
 
             const empAttendanceImg = await callSoapService(GlobalVariables.Client_URL, 'AddAttendance_Image', AttendanceImg_parameters);
 
-            console.log(empAttendanceImg);
-
             if (empAttendanceImg === null) {
                 alert('Attendance Capture Failed');
-            } else {
-                alert('Attendance Captured');
-                navigation.navigate('HomeScreen');
+            } 
+            else {
+                navigation.navigate('SuccessAnimationScreen', {
+                    message: 'Attendance Captured Successfully',
+                    details: `Attendance Ref Batch No: ${empAttendance}`,
+                    returnTo: returnTo || 'AppTabs'
+                });
             }
         }
     } catch (error) {

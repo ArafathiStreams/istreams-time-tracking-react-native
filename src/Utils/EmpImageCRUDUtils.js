@@ -4,19 +4,19 @@ import GlobalVariables from '../../iStServices/GlobalVariables.js';
 export const handleEmpImageUpload = async (avatar, empNo, setbtnLoading) => {
     setbtnLoading(true);
     const Username = GlobalVariables.Login_Username;
-
+    
     const formData = new FormData();
     formData.append('DomainName', Username);
-    formData.append('file', {
+    formData.append('EmpImageFile', {
         uri: avatar,
         type: 'image/jpeg',
         name: 'avatar.jpg',
     });
-    formData.append('outputNpyFileName', empNo);
+    formData.append('EmpNo', empNo);
 
     try {
         const response = await axios.post(
-            `http://103.168.19.35:8070/api/EncodeImgToNpy/upload`,
+            `http://23.105.135.231:8082/api/EncodeImgToNpy/upload`,
             formData,
             {
                 headers: {
@@ -24,7 +24,7 @@ export const handleEmpImageUpload = async (avatar, empNo, setbtnLoading) => {
                 },
             }
         );
-
+        
         if (response.data.status === 'Success') {
             alert('Image Uploaded Successfully');
         }
@@ -52,11 +52,11 @@ export const handleEmpImageView = async (
 
     try {
         const response = await axios.get(
-            `http://103.168.19.35:8070/api/EncodeImgToNpy/view`,
+            `http://23.105.135.231:8082/api/EncodeImgToNpy/view`,
             {
                 params: {
-                    domain: domainPart,
-                    filename: empNoforImg,
+                    DomainName: domainPart,
+                    EmpNo: empNoforImg,
                 },
                 headers: {
                     accept: '*/*',
@@ -64,7 +64,7 @@ export const handleEmpImageView = async (
                 responseType: 'blob',
             }
         );
-
+        
         const blob = response.data;
         const reader = new FileReader();
 

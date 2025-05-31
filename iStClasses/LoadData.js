@@ -23,6 +23,18 @@ export const loadData = async (taskKey) => {
 
             await AsyncStorage.setItem('ProjectList', JSON.stringify(parsedProjectListData));
         }
+
+        if (taskKey === 'fetchManpowerSuppliers') {
+            const ManSupplier_SQLQueryParameter = {
+                SQLQuery: 'SELECT SUPPLIER_NAME from manpower_supplier_master'
+            };
+
+            const ManPowerSupplierList = await callSoapService(GlobalVariables.Client_URL, 'DataModel_GetDataFrom_Query', ManSupplier_SQLQueryParameter);
+
+            const parsedManPowerSupplierListData = JSON.parse(ManPowerSupplierList);
+
+            await AsyncStorage.setItem('ManPowerSupplierList', JSON.stringify(parsedManPowerSupplierListData));
+        }
     } catch (error) {
         console.error("❌ loadData error:", error);
     }

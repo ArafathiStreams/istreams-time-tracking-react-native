@@ -26,31 +26,34 @@ export const ImageRecognition = async (
             }
         };
 
-        const convertUriToBase64 = async (uri) => {
-            return await FileSystem.readAsStringAsync(uri, {
-                encoding: FileSystem.EncodingType.Base64,
-            });
-        };
-
         const refNo = await getNextRefNo();
         setRecogLoading(true);
         const Username = GlobalVariables.Login_Username;
 
-        const base64Img = await convertUriToBase64(empTeamImage);
-        setBase64Img(base64Img);
+        const formData = new FormData();
+        formData.append('file', {
+            uri: empTeamImage,       // Example: 'file:///storage/emulated/0/DCIM/Camera/IMG_1234.jpg'
+            name: '3.jpeg',          // Must include extension
+            type: 'image/jpeg'       // MIME type
+        });
+        formData.append('RefNo', refNo);            // Example: 23
+        formData.append('DomainName', Username);    // Example: 'gopi@demo.com'
 
-        const response = await axios.post(
-            `http://103.168.19.35:8070/api/ImageMatching/upload?DomainName=${Username}`,
-            {
-                Base64Images: base64Img,
-                RefNo: refNo,
-            },
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
+        // Make the POST request
+        try {
+            const response = await axios.post(
+                'http://23.105.135.231:8100/ImageMatching',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Accept': 'application/json',
+                    },
+                }
+            );
+        } catch (error) {
+            console.error('Image recognition error:', error.response?.data || error.message);
+        }
 
         const fetchAndDisplayImages = async () => {
             try {
@@ -58,7 +61,7 @@ export const ImageRecognition = async (
                 setErrorMessage(null);
 
                 const response = await fetch(
-                    `http://103.168.19.35:8070/api/View/get-folder-images/${domainPart}/${refNo}`
+                    `http://23.105.135.231:8082/api/View/get-folder-images/${domainPart}/${refNo}`
                 );
                 const data = await response.json();
 
@@ -115,10 +118,12 @@ export const ImageRecognition = async (
 
                 const matched = finalCombinedList.filter(emp => emp.MATCH_TYPE === 'MATCHED');
                 const nonMatched = finalCombinedList.filter(emp => emp.MATCH_TYPE === 'NON_MATCHED');
+                const matchedNoEmp = finalCombinedList.filter(emp => emp.MATCH_TYPE === 'MATCHED_NO_EMP_INLIST');
 
                 const newGroupedData = [];
                 if (matched.length > 0) newGroupedData.push({ title: 'Matched Faces', data: matched });
                 if (nonMatched.length > 0) newGroupedData.push({ title: 'Non-Matched Faces', data: nonMatched });
+                if (matchedNoEmp.length > 0) newGroupedData.push({ title: 'Matched Faces (No Employee in List)', data: matchedNoEmp });
 
                 setGroupedData(newGroupedData);
             } catch (error) {

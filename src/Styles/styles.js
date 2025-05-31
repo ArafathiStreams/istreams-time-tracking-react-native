@@ -1,10 +1,10 @@
-import { StyleSheet, Dimensions} from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 const { width, height } = Dimensions.get('window');
 
 export const GlobalStyles = StyleSheet.create({
     pageContainer: {
         flex: 1,
-        paddingTop: 25,
+        paddingTop: 15,
         paddingHorizontal: 10,
     },
     locationContainer: {
@@ -29,7 +29,7 @@ export const GlobalStyles = StyleSheet.create({
     },
     imageContainer: {
         flex: 1,
-    },    
+    },
     fullImage: {
         marginTop: 10,
         width: width * 0.95,
@@ -37,30 +37,71 @@ export const GlobalStyles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#ddd',
     },
-    title1:{
+    title: {
+        fontFamily: 'Inter-Bold',
+        fontSize: 20,
+    },
+    title1: {
         fontSize: 19,
-        fontWeight: "bold",
+        fontFamily: 'Inter-Bold',
     },
     subtitle: {
         fontSize: 15,
-        fontWeight: "bold",
+        fontFamily: 'Inter-Bold',
     },
     subtitle_1: {
         fontSize: 17,
-        fontWeight: "bold",
+        fontFamily: 'Inter-Bold',
+    },
+    subtitle_2: {
+        fontSize: 15,
+        fontFamily: 'Inter-Bold',
+    },
+    subtitle_3: {
+        fontSize: 13,
+        fontFamily: 'Inter-Bold',
+    },
+    subtitle_4: {
+        fontSize: 12,
+        fontFamily: 'Inter-Bold',
+    },
+    body:{
+        fontSize: 16,
+        fontFamily: 'Inter-Regular',
+    },
+    content: {
+        fontSize: 14,
+        fontFamily: 'Inter-Regular',
     },
     txtEmpNo: {
         fontSize: 14,
-        fontWeight: 'bold',
+        fontFamily: 'Inter-Bold',
     },
     txtEmpName: {
         fontSize: 15,
-        fontWeight: "600"
+        fontFamily: 'Inter-Bold',
     },
     txtDesignation: {
         fontSize: 14,
+        fontFamily: 'Inter-Regular',
     },
-    bottomButtonContainer:{
+    bottomButtonContainer: {
         marginVertical: 10,
+    },
+    shimmerInput: {
+        height: height * 0.07,
+        width: '100%',
+        borderRadius: 8,
+        marginBottom: 20,
+    },
+    shimmerText: {
+        height: 20,
+        width: '40%',
+        borderRadius: 5,
+    },
+    shimmerButton: {
+        height: 40,
+        width: '100%',
+        borderRadius: 8,
     },
 });

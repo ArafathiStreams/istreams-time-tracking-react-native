@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 import LoginScreen from './src/screen/LoginScreen';
 import HomeScreen from './src/screen/HomeScreen';
 import DataLoadingScreen from './src/screen/DataLoadingScreen';
@@ -14,10 +14,17 @@ import NewEmployeeAddScreen from './src/screen/NewEmployeeAddScreen';
 import ChangeEmpImageScreen from './src/screen/ChangeEmpImageScreen';
 import CaptureImageScreen from './src/components/CaptureImageScreen';
 import SwitchUpdateImageScreen from './src/screen/SwitchUpdateImageScreen';
+import UpdateNonMatchedEmpScreen from './src/screen/UpdateNonMatchedEmpScreen';
+import ProfileScreen from './src/screen/ProfileScreen';
+import ImageDisplay from './src/screen/ImageDisplay'; ``
+import SuccessAnimationScreen from './src/Animations/SuccessAnimationScreen';
+import FailureAnimationScreen from './src/Animations/FailureAnimationScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { MaterialCommunityIcons, Entypo, Ionicons, FontAwesome6 } from '@expo/vector-icons';
+import { Ionicons, FontAwesome6, AntDesign, Octicons } from '@expo/vector-icons';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -36,15 +43,15 @@ const OrderStack = () => (
   </Stack.Navigator>
 );
 
-const CartStack = () => (
+const SearchStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="CartScreen" component={HomeScreen} />
+    <Stack.Screen name="HomeScreen" component={HomeScreen} />
   </Stack.Navigator>
 );
 
 const ProfileStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="ProfileScreen" component={HomeScreen} />
+    <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
   </Stack.Navigator>
 );
 
@@ -53,8 +60,8 @@ const AppTabs = () => (
   <Tab.Navigator
     screenOptions={{
       headerShown: false,
-      tabBarShowLabel: false,
-      tabBarActiveTintColor: 'blue',
+      tabBarActiveTintColor: '#044ab5',
+      tabBarInactiveTintColor: '#888',
       tabBarStyle: styles.tabBar,
     }}
   >
@@ -62,38 +69,55 @@ const AppTabs = () => (
       name="Home"
       component={HomeStack}
       options={{
-        tabBarIcon: ({ size, color }) => (
-          <Entypo name="home" size={size} color={color} />
+        tabBarIcon: ({ focused, size, color }) => (
+          <View style={styles.iconContainer}>
+            <AntDesign name="home" size={size} color={color} style={focused && styles.iconShift} />
+            {focused && <Text style={styles.savedLabel}>Home</Text>}
+          </View>
         ),
+        tabBarLabel: () => null, // hide default label
       }}
     />
+
+    <Tab.Screen
+      name="Search"
+      component={SearchStack}
+      options={{
+        tabBarIcon: ({ focused, size, color }) => (
+          <View style={styles.iconContainer}>
+            <Octicons name="search" size={size} color={color} style={focused && styles.iconShift} />
+            {focused && <Text style={styles.savedLabel}>Search</Text>}
+          </View>
+        ),
+        tabBarLabel: () => null,
+      }}
+    />
+
     <Tab.Screen
       name="Order"
       component={OrderStack}
       options={{
-        tabBarIcon: ({ size, color }) => (
-          <Ionicons name="menu" size={size} color={color} />
-        ),
-      }}
-    />
-    <Tab.Screen
-      name="Cart"
-      component={CartStack}
-      options={{
-        tabBarIcon: ({ size, color }) => (
-          <View style={styles.cartIconContainer}>
-            <MaterialCommunityIcons name="cart" size={size} color={color} />
+        tabBarIcon: ({ focused, size, color }) => (
+          <View style={styles.iconContainer}>
+            <Ionicons name="menu" size={size} color={color} style={focused && styles.iconShift} />
+            {focused && <Text style={styles.savedLabel}>Order</Text>}
           </View>
         ),
+        tabBarLabel: () => null,
       }}
     />
+
     <Tab.Screen
       name="Profile"
       component={ProfileStack}
       options={{
-        tabBarIcon: ({ size, color }) => (
-          <FontAwesome6 name="user" size={size} color={color} />
+        tabBarIcon: ({ focused, size, color }) => (
+          <View style={styles.iconContainer}>
+            <FontAwesome6 name="user" size={size} color={color} style={focused && styles.iconShift} />
+            {focused && <Text style={styles.savedLabel}>Profile</Text>}
+          </View>
         ),
+        tabBarLabel: () => null,
       }}
     />
   </Tab.Navigator>
@@ -102,11 +126,30 @@ const AppTabs = () => (
 // Main App Navigator
 const AppNavigator = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [fontsLoaded] = useFonts({
+    'Inter-SemiBold': require('./assets/fonts/Inter_18pt-SemiBold.ttf'),
+    'Inter-Bold': require('./assets/fonts/Inter_18pt-Bold.ttf'),
+    'Inter-Regular': require('./assets/fonts/Inter_18pt-Regular.ttf'),
+    'Inter-Medium': require('./assets/fonts/Inter_18pt-Medium.ttf'),
+  });
+
+  useEffect(() => {
+    async function prepare() {
+      await SplashScreen.preventAutoHideAsync();
+    }
+    prepare();
+  }, []);
+
+  if (!fontsLoaded) {
+    return undefined;
+  } else {
+    SplashScreen.hideAsync();
+  }
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {isLoggedIn ? (
-        <Stack.Screen name="Tabs" component={AppTabs} />
+        <Stack.Screen name="AppTabs" component={AppTabs} />
       ) : (
         <>
           <Stack.Screen name="Login">
@@ -116,7 +159,7 @@ const AppNavigator = () => {
           </Stack.Screen>
           <Stack.Screen name="LoginScreen" component={LoginScreen} />
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
-          <Stack.Screen name="Tabs" component={AppTabs} />
+          <Stack.Screen name="AppTabs" component={AppTabs} />
           <Stack.Screen name="DataLoading" component={DataLoadingScreen} />
           <Stack.Screen name="EmployeeList" component={EmployeeList} />
           <Stack.Screen name="TeamCheckin" component={TeamCheckin} />
@@ -129,6 +172,26 @@ const AppNavigator = () => {
           <Stack.Screen name="NewEmployeeAddScreen" component={NewEmployeeAddScreen} />
           <Stack.Screen name="ChangeEmpImageScreen" component={ChangeEmpImageScreen} />
           <Stack.Screen name="SwitchUpdateImageScreen" component={SwitchUpdateImageScreen} />
+          <Stack.Screen name="UpdateNonMatchedEmpScreen" component={UpdateNonMatchedEmpScreen} />
+          <Stack.Screen name="ImageDisplay" component={ImageDisplay} />
+          <Stack.Screen
+            name="SuccessAnimationScreen"
+            component={SuccessAnimationScreen}
+            options={{
+              presentation: 'modal',
+              headerShown: false,
+              animation: 'slide_from_bottom',
+            }}
+          />
+          <Stack.Screen
+            name="FailureAnimationScreen"
+            component={FailureAnimationScreen}
+            options={{
+              presentation: 'modal',
+              headerShown: false,
+              animation: 'slide_from_bottom',
+            }}
+          />
         </>
       )}
     </Stack.Navigator>
@@ -144,26 +207,29 @@ const App = () => (
 export default App;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+  savedLabel: {
+    fontSize: 12,
+    fontFamily: 'Inter-Bold',
+    color: '#888',
+    textAlign: 'center',
+    width: 50,
   },
-  screenContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  iconContainer: {
     alignItems: 'center',
+    justifyContent: 'center',
+    height: 50,
   },
   tabBar: {
+    position: 'absolute',
     height: 50,
+    borderRadius: 30,
     paddingTop: 5,
-    backgroundColor: "white",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
+    marginHorizontal: 10,
+    marginBottom: 10,
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
 });

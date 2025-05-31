@@ -3,6 +3,7 @@ import React from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import GlobalVariables from '../../iStServices/GlobalVariables';
+import { GlobalStyles } from "../Styles/styles";
 
 const Header = ({ title = "Header", style }) => {
     const navigation = useNavigation();
@@ -17,7 +18,11 @@ const Header = ({ title = "Header", style }) => {
                 <Ionicons name="arrow-back" color={"black"} size={24} />
             </TouchableOpacity>
 
-            <Text style={styles.title}>{title}</Text>
+            <View style={styles.titleContainer}>
+                <Text style={GlobalStyles.title} numberOfLines={2}>
+                    {title}
+                </Text>
+            </View>
 
             <Image
                 source={{ uri: `data:image/jpeg;base64,${GlobalVariables.EMP_IMAGE_BASE64}` }}
@@ -31,33 +36,26 @@ export default Header;
 
 const styles = StyleSheet.create({
     container: {
+        paddingTop: 10,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginTop: 20,
+        paddingHorizontal: 10,
     },
     touchableArea: {
         padding: 10,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    appIcon: {
-        height: 28,
-        width: 28,
-        tintColor: "black"
+    titleContainer: {
+        flex: 1,
+        paddingHorizontal: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     dp: {
         height: 44,
         width: 44,
         borderRadius: 22,
     },
-    title: {
-        fontSize: 20,
-        color: "black",
-        fontWeight: "bold",
-        position: "absolute",
-        left: 0,
-        right: 0,
-        textAlign: "center"
-    }
 });

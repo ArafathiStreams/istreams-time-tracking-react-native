@@ -1,43 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, Image, StyleSheet, TouchableOpacity,
-  Dimensions, KeyboardAvoidingView, ScrollView, Platform,
+  View, Text, Image, StyleSheet, Dimensions, KeyboardAvoidingView, ScrollView, Platform,
 } from 'react-native';
 import { TextInput, Button, Switch } from 'react-native-paper';
 import ImageEditPopUp from '../../Popup/ImageEditPopUp';
-import Header from './Header';
 import { GlobalStyles } from '../Styles/styles';
-import { Ionicons } from '@expo/vector-icons';
 const { width, height } = Dimensions.get('window');
-import { useNavigation } from '@react-navigation/native';
 import ShimmerPlaceholder from 'react-native-shimmer-placeholder';
 import { LinearGradient } from 'expo-linear-gradient';
 import { handleEmpImageUpload, handleEmpImageView } from '../Utils/EmpImageCRUDUtils';
+import ManPowerSuppListPopUp from '../../Popup/ManPowerSuppListPopUp';
 
-const EmployeeAddComponent = ({employee}) => {
-  const navigation = useNavigation();
+const EmployeeAddComponent = ({ employee }) => {
+  const [isPopupVisible, setPopupVisible] = useState(false);
   const [btnloading, setbtnLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [avatar, setAvatar] = useState(null);
+  const [id, setId] = useState();
   const [empNo, setEmpNo] = useState();
   const [empName, setEmpName] = useState();
   const [designation, setDesignation] = useState();
+  const [manpowerSupp, setManpowerSupp] = useState();
+
+  const handleManpowerSelect = (manPowerSupp) => {
+    setManpowerSupp(manPowerSupp.SUPPLIER_NAME);
+  };
 
   useEffect(() => {
-    // Simulate a loading delay
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2000);
+    }, 500);
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    if(employee){
+    if (employee) {
       setEmpNo(employee.EMP_NO);
       setEmpName(employee.EMP_NAME);
       setDesignation(employee.DESIGNATION);
     }
-    
+
     handleEmpImageView(employee, setEmpNo, setEmpName, setDesignation, setAvatar);
   }, [employee]);
 
@@ -66,24 +68,24 @@ const EmployeeAddComponent = ({employee}) => {
 
           {/* Shimmer for Switch */}
           <View style={styles.switchContainer}>
-            <ShimmerPlaceholder LinearGradient={LinearGradient} style={styles.shimmerText} />
+            <ShimmerPlaceholder LinearGradient={LinearGradient} style={GlobalStyles.shimmerText} />
           </View>
 
           {/* Shimmer for Inputs */}
           <View style={styles.inputContainer}>
-            <ShimmerPlaceholder LinearGradient={LinearGradient} style={styles.shimmerInput} />
-            <ShimmerPlaceholder LinearGradient={LinearGradient} style={styles.shimmerInput} />
-            <ShimmerPlaceholder LinearGradient={LinearGradient} style={styles.shimmerInput} />
+            <ShimmerPlaceholder LinearGradient={LinearGradient} style={GlobalStyles.shimmerInput} />
+            <ShimmerPlaceholder LinearGradient={LinearGradient} style={GlobalStyles.shimmerInput} />
+            <ShimmerPlaceholder LinearGradient={LinearGradient} style={GlobalStyles.shimmerInput} />
           </View>
         </ScrollView>
 
         {/* Shimmer for Button */}
         <View style={GlobalStyles.bottomButtonContainer}>
-          <ShimmerPlaceholder LinearGradient={LinearGradient} style={styles.shimmerButton} />
+          <ShimmerPlaceholder LinearGradient={LinearGradient} style={GlobalStyles.shimmerButton} />
         </View>
       </KeyboardAvoidingView>
     );
-  }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -107,13 +109,24 @@ const EmployeeAddComponent = ({employee}) => {
             <Text style={GlobalStyles.subtitle_1}>Employee Details</Text>
           </View>
           <View style={styles.inputContainer}>
-            <TextInput
-              mode="outlined"
-              label="Emp No"
-              value={empNo}
-              onChangeText={setEmpNo}
-              style={[styles.input, { width: "50%" }]}
-              placeholder="Enter Emp No" />
+            <View style={[GlobalStyles.twoInputContainer, styles.input]}>
+              <TextInput
+                mode="outlined"
+                label="Emp No"
+                value={empNo}
+                style={GlobalStyles.container1}
+                onChangeText={setEmpNo}
+                placeholder="Enter Emp No" />
+
+              <TextInput
+                mode="outlined"
+                label="Emp ID (New)"
+                value={id}
+                style={GlobalStyles.container2}
+                editable={false}
+                onChangeText={setId}
+                placeholder="(New)" />
+            </View>
 
             <TextInput
               mode="outlined"
@@ -130,6 +143,24 @@ const EmployeeAddComponent = ({employee}) => {
               onChangeText={setDesignation}
               style={styles.input}
               placeholder="Enter Designation" />
+
+            <TextInput
+              mode="outlined"
+              label="ManPower Supplier"
+              onPressIn={() => setPopupVisible(true)}
+              value={manpowerSupp}
+              onChangeText={setManpowerSupp}
+              style={styles.input}
+              placeholder="Select ManPower Supplier" />
+
+            <ManPowerSuppListPopUp
+              visible={isPopupVisible}
+              onClose={() => setPopupVisible(false)}
+              onSelect={(manPowerSupp) => {
+                handleManpowerSelect(manPowerSupp);
+                setPopupVisible(false);
+              }}
+            />
           </View>
 
           {/* Image Picker Modal */}
@@ -155,18 +186,15 @@ const EmployeeAddComponent = ({employee}) => {
 const styles = StyleSheet.create({
   innerContainer: {
     flex: 1,
-    justifyContent: 'space-between',
   },
   switchContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-
   },
   profileContainer: {
     alignSelf: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
   },
   imageContainer: {
     width: width * 0.35,
@@ -187,45 +215,9 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   input: {
-    marginBottom: 10,
-    height: height * 0.07,
+    marginBottom: 5,
   },
-  iconContainer: {
-    position: 'absolute',
-    bottom: 5,
-    left: width * 0.25,
-    backgroundColor: '#007AFF',
-    width: 40,
-    height: 40,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#fff',
-    zIndex: 10,
-  },
-  shimmerInput: {
-    height: height * 0.07,
-    width: '100%',
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  shimmerText: {
-    height: 20,
-    width: '40%',
-    borderRadius: 5,
-  },
-  shimmerSwitch: {
-    height: 30,
-    width: 50,
-    borderRadius: 15,
-  },
-  shimmerButton: {
-    height: 40,
-    width: '100%',
-    borderRadius: 8,
-  },
-})
+});
 
 
 export default EmployeeAddComponent;

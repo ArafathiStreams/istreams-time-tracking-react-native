@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Alert, Image, Modal, FlatList } from 'react-native';
-import { Provider as PaperProvider, TextInput, Button } from 'react-native-paper';
+import React, { useState } from 'react';
+import { View } from 'react-native';
+import { Provider as PaperProvider, Button } from 'react-native-paper';
 import { GlobalStyles } from '../Styles/styles';
 import Header from '../components/Header';
 import { useNavigation } from '@react-navigation/native';
 import CheckinComponent from '../components/CheckinComponent';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TeamCheckin = ({ route }) => {
     const navigation = useNavigation();
@@ -16,6 +16,7 @@ const TeamCheckin = ({ route }) => {
     const [empTeamImage, setEmpTeamImage] = useState(null);
     const [coordinates, setCoordinates] = useState('');
     const [locationName, setLocationName] = useState('Fetching location...');
+    const insets = useSafeAreaInsets();
 
     const handleProjectSelect = (project) => {
         setProjectNo(project.PROJECT_NO);
@@ -43,9 +44,9 @@ const TeamCheckin = ({ route }) => {
     return (
         <SafeAreaProvider>
             <PaperProvider>
-                <View style={GlobalStyles.pageContainer}>
+                <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
                     <Header title="Team Check-in" />
-
+                    
                     <CheckinComponent
                         entryDate={entryDate}
                         setEntryDate={setEntryDate}
@@ -71,9 +72,5 @@ const TeamCheckin = ({ route }) => {
         </SafeAreaProvider>
     );
 };
-
-const styles = StyleSheet.create({
-
-})
 
 export default TeamCheckin;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, FlatList, Image } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from '../components/Header';
 import { callSoapService } from '../../SoapRequest/callSoapService ';
 import GlobalVariables from '../../iStServices/GlobalVariables';
@@ -10,6 +10,7 @@ import { SaveAttendance } from '../../iStClasses/SaveAttendance';
 import * as FileSystem from 'expo-file-system';
 
 const TeamCheckoutEmployees = () => {
+    const navigation = useNavigation();
     const route = useRoute();
     const { projectNo, chosenCheckinDate, entryDate, entryTime, coordinates, locationName, empTeamImage } = route.params || {};
     const [btnloading, setbtnLoading] = useState(false);
@@ -122,6 +123,8 @@ const TeamCheckoutEmployees = () => {
                 empTeamImage,
                 selectedEmp: empData,
                 base64Img,
+                navigation,
+                returnTo: 'TeamCheckout'
             });
 
             setbtnLoading(false);
@@ -157,9 +160,9 @@ const TeamCheckoutEmployees = () => {
                                     style={styles.empImage}
                                 />
                                 <View style={styles.innerContainer}>
-                                    <Text style={styles.txtEmpNo}>{item.emp_no}</Text>
-                                    <Text style={styles.txtEmpName}>{item.emp_name}</Text>
-                                    <Text style={styles.txtDesignation}>{item.inout_status}</Text>
+                                    <Text style={[GlobalStyles.txtEmpNo, {color: '#0685de'}]}>{item.emp_no}</Text>
+                                    <Text style={GlobalStyles.txtEmpName}>{item.emp_name}</Text>
+                                    <Text style={GlobalStyles.txtDesignation}>{item.inout_status}</Text>
                                 </View>
                                 <View style={styles.checkBoxSection}>
                                     <Checkbox
@@ -208,19 +211,6 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 10,
         justifyContent: 'center',
-    },
-    txtEmpNo: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#0685de',
-    },
-    txtEmpName: {
-        fontSize: 15,
-        fontWeight: "600"
-    },
-    txtDesignation: {
-        fontSize: 14,
-        fontWeight: 'bold'
     },
     checkBoxSection: {
         justifyContent: 'center',
