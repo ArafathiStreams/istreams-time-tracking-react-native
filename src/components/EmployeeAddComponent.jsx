@@ -90,7 +90,7 @@ const EmployeeAddComponent = ({ employee }) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={GlobalStyles.pageContainer}
+      style={{flex: 1, paddingTop: 10}}
     >
       <View style={styles.innerContainer}>
         <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">

@@ -8,10 +8,9 @@ import { GlobalStyles } from '../Styles/styles';
 import GlobalVariables from '../../iStServices/GlobalVariables';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Fontisto from 'react-native-vector-icons/Fontisto';
 import { useFocusEffect } from '@react-navigation/native';
 import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const HomeScreen = () => {
     const navigation = useNavigation();
@@ -24,9 +23,9 @@ const HomeScreen = () => {
 
     const handleLogout = async () => {
         try {
-            await AsyncStorage.clear(); // Clear all AsyncStorage data
+            await AsyncStorage.clear();
             Alert.alert('Logout Successful', 'You have been logged out.');
-            navigation.replace('LoginScreen'); // Navigate back to the login screen
+            navigation.replace('LoginScreen');
         } catch (error) {
             console.error('Error clearing AsyncStorage:', error);
         }
@@ -55,7 +54,7 @@ const HomeScreen = () => {
     const handleChangeEmpImage = () => {
         navigation.navigate('SwitchUpdateImageScreen');
     };
-    
+
     const actions1 = [
         { icon: 'qrcode-scan', label: 'Team\nCheck-in', onPress: handleTeamCheckin },
         { icon: 'account-group', label: 'Team\nCheck-out', onPress: handleTeamCheckout },
@@ -66,7 +65,12 @@ const HomeScreen = () => {
     const actions2 = [
         { label: 'Add New Employee', icon: 'user-plus', onPress: handleAddEmployee },
         { label: 'Update Employee Image', icon: 'images', onPress: handleChangeEmpImage },
-        { label: 'View Attendance', icon: 'users-viewfinder', onPress: () => { } },
+        {
+            label: 'View Attendance', icon: 'users-viewfinder', onPress: () => {
+                console.log('Company Code:', GlobalVariables.CompanyCode);
+                console.log('Branch Code:', GlobalVariables.BranchCode);
+            }
+        },
         { label: 'Reports', icon: 'chart-bar', onPress: () => { } },
         { label: 'Leave Request', icon: 'door-open', onPress: () => { } },
         { label: 'Leave Details', icon: 'file-alt', onPress: () => { } }
@@ -97,70 +101,72 @@ const HomeScreen = () => {
     );
 
     return (
-        <SafeAreaProvider>
-            <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
-                <View style={styles.row1Container}>
-                    <Image
-                        source={require('../../assets/logo_edited.png')}
-                        style={styles.logo}
-                    />
-                    <View style={styles.iconRowContainer}>
-                        <View style={styles.iconContainer}>
-                            <Fontisto name="bell" size={20} color={'black'} />
-                        </View>
-                        <View style={styles.iconContainer}>
-                            <IonIcons name="settings" size={20} color={'black'} />
-                        </View>
-                        <TouchableOpacity onPress={handleDPImageCLick}>
-                            <Image
-                                source={{ uri: `data:image/jpeg;base64,${GlobalVariables.EMP_IMAGE_BASE64}` }}
-                                style={styles.iconContainer}
-                            />
-                        </TouchableOpacity>
+        <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
+            <View style={styles.row1Container}>
+                <Image
+                    source={require('../../assets/logo_edited.png')}
+                    style={styles.logo}
+                />
+
+                <View style={styles.iconRowContainer}>
+                    <TouchableOpacity style={styles.titleContainer} onPress={handleDPImageCLick}>
+                        <Text style={[GlobalStyles.subtitle_3, { width: 100, textAlign: 'center' }]}
+                            numberOfLines={1}>{GlobalVariables.CompanyName}</Text>
+                    </TouchableOpacity>
+
+                    <View style={styles.iconContainer}>
+                        <IonIcons name="settings" size={20} color={'black'} />
+                    </View>
+                    <TouchableOpacity onPress={handleDPImageCLick}>
+                        <Image
+                            source={{ uri: `data:image/jpeg;base64,${GlobalVariables.EMP_IMAGE_BASE64}` }}
+                            style={styles.iconContainer}
+                        />
+                    </TouchableOpacity>
+                </View>
+            </View>
+            {/* Popup for Account Details and Logout */}
+            {showPopup && (
+                <View style={styles.popup}>
+                    <Text style={[GlobalStyles.subtitle_3, { marginBottom: 5, textAlign: 'center', width: 170 }]} numberOfLines={2}>{GlobalVariables.CompanyName}</Text>
+                    <Text style={[GlobalStyles.subtitle_3, { marginBottom: 5, textAlign: 'center' }]}>Account Details</Text>
+                    <Button style={styles.btnlogout} title="Logout" onPress={handleLogout} theme={{ colors: { primary: 'white' } }}>Logout</Button>
+                </View>
+            )}
+            <HomeCarousel />
+
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={styles.atteElementsContainer}>
+                    <Text style={[GlobalStyles.title1, { marginHorizontal: 16, marginBottom: 5 }]}>Attendance Capturing</Text>
+                    <View style={styles.container}>
+                        {actions1.map((action, index) => (
+                            <TouchableOpacity key={index} style={styles.action} onPress={action.onPress}>
+                                <View style={styles.iconWrapper}>
+                                    <Icon name={action.icon} size={30} color="#fff" />
+                                </View>
+                                <Text style={[GlobalStyles.subtitle_4, { textAlign: 'center' }]}>{action.label}</Text>
+                            </TouchableOpacity>
+                        ))}
                     </View>
                 </View>
-                {/* Popup for Account Details and Logout */}
-                {showPopup && (
-                    <View style={styles.popup}>
-                        <Text style={[GlobalStyles.subtitle_3, { marginBottom: 5 }]}>Account Details</Text>
-                        <Button style={styles.btnlogout} title="Logout" onPress={handleLogout} theme={{ colors: { primary: 'white' } }}>Logout</Button>
-                    </View>
-                )}
-                <HomeCarousel />
 
-                <ScrollView showsVerticalScrollIndicator={false}>
-                    <View style={styles.atteElementsContainer}>
-                        <Text style={[GlobalStyles.title1, { marginHorizontal: 16, marginBottom: 5 }]}>Attendance Capturing</Text>
-                        <View style={styles.container}>
-                            {actions1.map((action, index) => (
-                                <TouchableOpacity key={index} style={styles.action} onPress={action.onPress}>
-                                    <View style={styles.iconWrapper}>
-                                        <Icon name={action.icon} size={30} color="#fff" />
-                                    </View>
-                                    <Text style={[GlobalStyles.subtitle_4, { textAlign: 'center' }]}>{action.label}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
+                <View style={styles.atteElementsContainer1}>
+                    <Text style={GlobalStyles.title1}>
+                        Employee Management
+                    </Text>
+                    <View style={styles.container1}>
+                        {actions2.map((action2, index) => (
+                            <TouchableOpacity key={index} style={[styles.action1, { width: itemWidth }]} onPress={action2.onPress}>
+                                <View style={styles.iconWrapper1}>
+                                    <FontAwesome6Icon name={action2.icon} size={20} color="#fff" />
+                                </View>
+                                <Text style={[GlobalStyles.subtitle_3, { textAlign: 'center' }]}>{action2.label}</Text>
+                            </TouchableOpacity>
+                        ))}
                     </View>
-
-                    <View style={styles.atteElementsContainer1}>
-                        <Text style={GlobalStyles.title1}>
-                            Employee Management
-                        </Text>
-                        <View style={styles.container1}>
-                            {actions2.map((action2, index) => (
-                                <TouchableOpacity key={index} style={[styles.action1, { width: itemWidth }]} onPress={action2.onPress}>
-                                    <View style={styles.iconWrapper1}>
-                                        <FontAwesome6Icon name={action2.icon} size={20} color="#fff" />
-                                    </View>
-                                    <Text style={[GlobalStyles.subtitle_3, { textAlign: 'center' }]}>{action2.label}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                    </View>
-                </ScrollView>
-            </View>
-        </SafeAreaProvider>
+                </View>
+            </ScrollView>
+        </View>
     );
 };
 
@@ -173,8 +179,17 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: 'space-between'
     },
+    titleContainer: {
+        borderColor: '#002D72',
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        height: 45,
+        justifyContent: 'center',
+        backgroundColor: '#f0f8ff',
+    },
     iconRowContainer: {
-        width: 140,
+        width: 220,
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
@@ -184,8 +199,8 @@ const styles = StyleSheet.create({
         height: 60
     },
     iconContainer: {
-        height: 40,
-        width: 40,
+        height: 45,
+        width: 45,
         borderRadius: 25,
         backgroundColor: '#cbcdcc',
         alignItems: 'center',
@@ -213,8 +228,8 @@ const styles = StyleSheet.create({
     },
     popup: {
         position: 'absolute',
-        top: 85,
-        left: '83%',
+        top: 65,
+        left: '76%',
         transform: [{ translateX: '-50%' }],
         backgroundColor: 'white',
         borderRadius: 10,

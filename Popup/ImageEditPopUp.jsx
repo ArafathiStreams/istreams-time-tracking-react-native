@@ -23,8 +23,7 @@ const ImageEditPopUp = ({ setAvatar, empNo }) => {
             }
             result = await ImagePicker.launchCameraAsync({
                 allowsEditing: true,
-                aspect: [1, 1],
-                quality: 1,
+                quality: 0.3,
             });
         } else {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -35,8 +34,7 @@ const ImageEditPopUp = ({ setAvatar, empNo }) => {
             result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
-                aspect: [1, 1],
-                quality: 1,
+                quality: 0.3,
             });
         }
 

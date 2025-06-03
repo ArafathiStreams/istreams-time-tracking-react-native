@@ -1,7 +1,6 @@
 // SearchScreen.js
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import HomeContent from '../components/HomeContent';
 import { useNavigation } from '@react-navigation/native';
 
@@ -14,30 +13,28 @@ const SearchScreen = () => {
   };
 
   return (
-    <SafeAreaProvider>
-      <View style={{ flex: 1 }}>
-        {/* 🔍 Search Bar */}
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search Employee Actions..."
-            value={searchQuery}
-            onChangeText={handleSearch}
-          />
-        </View>
-
-        {/* 🧩 Reusable HomeContent with search filtering */}
-        <HomeContent
-          searchQuery={searchQuery}
-          onTeamCheckin={() => navigation.navigate('TeamCheckin')}
-          onTeamCheckout={() => navigation.navigate('TeamCheckout')}
-          onSelfCheckin={() => navigation.navigate('SelfCheckin')}
-          onSelfCheckout={() => navigation.navigate('SelfCheckout')}
-          onAddEmployee={() => navigation.navigate('NewEmployeeAddScreen')}
-          onUpdateEmpImage={() => navigation.navigate('SwitchUpdateImageScreen')}
+    <View style={{ flex: 1 }}>
+      {/* 🔍 Search Bar */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search Employee Actions..."
+          value={searchQuery}
+          onChangeText={handleSearch}
         />
       </View>
-    </SafeAreaProvider>
+
+      {/* 🧩 Reusable HomeContent with search filtering */}
+      <HomeContent
+        searchQuery={searchQuery}
+        onTeamCheckin={() => navigation.navigate('TeamCheckin')}
+        onTeamCheckout={() => navigation.navigate('TeamCheckout')}
+        onSelfCheckin={() => navigation.navigate('SelfCheckin')}
+        onSelfCheckout={() => navigation.navigate('SelfCheckout')}
+        onAddEmployee={() => navigation.navigate('NewEmployeeAddScreen')}
+        onUpdateEmpImage={() => navigation.navigate('SwitchUpdateImageScreen')}
+      />
+    </View>
   );
 };
 

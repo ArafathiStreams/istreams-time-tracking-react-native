@@ -3,9 +3,8 @@ import {
   View, Text, Image, StyleSheet, TouchableOpacity,
   Dimensions, KeyboardAvoidingView, ScrollView, Platform,
 } from 'react-native';
-import { TextInput, Button, Switch } from 'react-native-paper';
+import { TextInput, Button } from 'react-native-paper';
 import ImageEditPopUp from '../../Popup/ImageEditPopUp';
-import Header from '../components/Header';
 import { GlobalStyles } from '../Styles/styles';
 const { width, height } = Dimensions.get('window');
 import { useNavigation } from '@react-navigation/native';
@@ -35,7 +34,7 @@ const ChangeEmpImageScreen = () => {
     return (
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={GlobalStyles.pageContainer}
+        style={{flex: 1, marginTop: 10}}
       >
         <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
           {/* Shimmer for Profile Image */}
@@ -69,7 +68,7 @@ const ChangeEmpImageScreen = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={GlobalStyles.pageContainer}
+      style={{flex: 1, marginTop: 10}}
     >
       <View style={styles.innerContainer}>
         <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">

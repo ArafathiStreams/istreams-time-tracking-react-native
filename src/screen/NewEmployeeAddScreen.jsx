@@ -1,26 +1,19 @@
 import React from 'react';
-import {
-  View, StyleSheet
-} from 'react-native';
+import { View } from 'react-native';
 import Header from '../components/Header';
 import EmployeeAddComponent from '../components/EmployeeAddComponent';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { GlobalStyles } from '../Styles/styles';
 
 const NewEmployeeAddScreen = () => {
+  const insets = useSafeAreaInsets();
   return (
-    <View style={styles.innerContainer}>
+    <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
       <Header title="Add New Employee" />
 
       <EmployeeAddComponent/>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  innerContainer: {
-    flex: 1,
-    paddingTop: 20,
-  }
-})
-
 
 export default NewEmployeeAddScreen;

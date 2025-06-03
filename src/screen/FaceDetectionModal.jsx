@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Modal, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Modal } from 'react-native';
 import { CameraView } from 'expo-camera';
 import * as FaceDetector from 'expo-face-detector';
 import { IconButton } from 'react-native-paper';
 import { clearImagePickerCache } from '../Utils/captureImageUtils';
 
 export default function FaceDetectionModal({ visible, onClose, onCaptureComplete }) {
-    const [cameraType, setCameraType] = useState('back');
+    const [cameraType, setCameraType] = useState('front');
     const [isProcessing, setIsProcessing] = useState(false);
     const [detectionError, setDetectionError] = useState(null);
     const [hasCaptured, setHasCaptured] = useState(false);
@@ -31,7 +31,7 @@ export default function FaceDetectionModal({ visible, onClose, onCaptureComplete
         try {
             await clearImagePickerCache(); 
             
-            const photo = await cameraRef.current.takePictureAsync({ quality: 0.2 });
+            const photo = await cameraRef.current.takePictureAsync({ quality: 0.1 });
 
             const result = await FaceDetector.detectFacesAsync(photo.uri, {
                 mode: FaceDetector.FaceDetectorMode.fast,
@@ -42,15 +42,7 @@ export default function FaceDetectionModal({ visible, onClose, onCaptureComplete
             if (result?.faces?.length > 0) {
                 const face = result.faces[0];
                 onCaptureComplete({
-                    capturedImage: photo.uri,
-                    isFrontCamera: cameraType === 'front',
-                    faceData: {
-                        facesCount: result.faces.length,
-                        bounds: face.bounds,
-                        rollAngle: face.rollAngle,
-                        yawAngle: face.yawAngle,
-                        capturedAt: new Date().toISOString(),
-                    }
+                    capturedImage: photo.uri
                 });
                 onClose();
             } else {

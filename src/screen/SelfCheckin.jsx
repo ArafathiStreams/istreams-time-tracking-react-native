@@ -13,10 +13,12 @@ import { formatDate, formatTime } from '../Utils/dataTimeUtils';
 import FaceDetectionModal from './FaceDetectionModal';
 import { ImageRecognition } from '../Utils/ImageRecognition';
 import ImageRecognitionResult from '../components/ImageRecognitionResult';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SelfCheckin = () => {
     const [isPopupVisible, setPopupVisible] = useState(false);
     const navigation = useNavigation();
+    const insets = useSafeAreaInsets();
     const [btnloading, setbtnLoading] = useState(false);
     const [entryDate, setEntryDate] = useState('');
     const [entryTime, setEntryTime] = useState('');
@@ -162,7 +164,7 @@ const SelfCheckin = () => {
     };
 
     return (
-        <View style={GlobalStyles.pageContainer}>
+        <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
             <Header title="Self Check-In" />
             <View style={{ flex: 1 }}>
                 <View style={GlobalStyles.locationContainer}>

@@ -5,8 +5,9 @@ const GlobalVariables = {
     USER_NAME : '',
     EMP_NO : '',
     EMP_IMAGE_BASE64 : '',
-    CompanyCode : 1,
-    BranchCode : 1,
+    CompanyCode : '',
+    BranchCode : '',
+    CompanyName : '',
     doConnectionParameter : '',
 };
 

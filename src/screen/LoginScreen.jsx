@@ -56,7 +56,6 @@ const LoginScreen = ({ navigation, setIsLoggedIn }) => {
                     }
                     setLoading(false);
 
-                    // Check if it's the first login
                     const isFirstLogin = await AsyncStorage.getItem('isFirstLogin');
                     if (!isFirstLogin) {
                         await AsyncStorage.setItem('isFirstLogin', 'true');

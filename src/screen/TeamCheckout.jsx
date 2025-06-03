@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, Image } from 'react-native';
+import { Text, View, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Header from '../components/Header';
 import { LocationService } from '../../iStServices/LocationService';
@@ -10,9 +10,11 @@ import { formatDate, formatTime } from '../Utils/dataTimeUtils';
 import ProjectListPopup from '../../Popup/ProjectListPopUp';
 import CustomDatePicker from '../components/CustomDatePicker';
 import { handleCaptureImage } from '../Utils/captureImageUtils';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TeamCheckout = () => {
     const navigation = useNavigation();
+    const insets = useSafeAreaInsets();
     const [empTeamImage, setEmpTeamImage] = useState(null);
     const [locationName, setLocationName] = useState('Fetching Location...');
     const [coordinates, setCoordinates] = useState('');
@@ -48,7 +50,7 @@ const TeamCheckout = () => {
             alert('Project Not Selected.');
             return;
         }
-        else if(!chosenCheckinDate){
+        else if (!chosenCheckinDate) {
             alert('Check-in Date not entered.')
         }
         else if (!empTeamImage) {
@@ -64,7 +66,7 @@ const TeamCheckout = () => {
 
     return (
         <PaperProvider>
-            <View style={GlobalStyles.pageContainer}>
+            <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
                 <Header title="Team Check-out" />
 
                 <View style={GlobalStyles.locationContainer}>
@@ -78,7 +80,6 @@ const TeamCheckout = () => {
                             mode="outlined"
                             label="Entry Date"
                             value={entryDate}
-                            style={styles.input}
                             editable={false}
                         />
                     </View>
@@ -88,7 +89,6 @@ const TeamCheckout = () => {
                             mode="outlined"
                             label="Entry Time"
                             value={entryTime}
-                            style={styles.input}
                             editable={false}
                             onPressIn={() => setShowTimePicker(true)}
                         />
@@ -96,36 +96,33 @@ const TeamCheckout = () => {
                 </View>
 
                 <Text style={[GlobalStyles.subtitle, { marginTop: 10 }]}>Retrieve Check-in Details here</Text>
-
-                <View style={styles.projectContainer}>
-                    <View style={[GlobalStyles.twoInputContainer, { marginVertical: 5 }]}>
-                        <TextInput
-                            mode="outlined"
-                            label="Project No"
-                            onPressIn={() => setPopupVisible(true)}
-                            value={projectNo}
-                            onChangeText={setProjectNo}
-                            style={GlobalStyles.container1}
-                            placeholder="Enter Project No"
-                            showSoftInputOnFocus={false} />
-                        <TextInput
-                            mode="outlined"
-                            label="Check-in Date"
-                            onPress={() => setVisible(true)}
-                            value={chosenCheckinDate}
-                            style={GlobalStyles.container2}
-                            showSoftInputOnFocus={false}
-                        />
-                    </View>
-
+                <View style={[GlobalStyles.twoInputContainer, { marginVertical: 5 }]}>
                     <TextInput
                         mode="outlined"
-                        label="Project Name"
-                        value={projectName}
-                        onChangeText={setProjectName}
-                        editable={false}
-                        placeholder="Enter Project Name" />
+                        label="Project No"
+                        onPressIn={() => setPopupVisible(true)}
+                        value={projectNo}
+                        onChangeText={setProjectNo}
+                        style={GlobalStyles.container1}
+                        placeholder="Enter Project No"
+                        showSoftInputOnFocus={false} />
+                    <TextInput
+                        mode="outlined"
+                        label="Check-in Date"
+                        onPress={() => setVisible(true)}
+                        value={chosenCheckinDate}
+                        style={GlobalStyles.container2}
+                        showSoftInputOnFocus={false}
+                    />
                 </View>
+
+                <TextInput
+                    mode="outlined"
+                    label="Project Name"
+                    value={projectName}
+                    onChangeText={setProjectName}
+                    editable={false}
+                    placeholder="Enter Project Name" />
 
                 <View style={GlobalStyles.camButtonContainer}>
                     <Button icon="camera" mode="contained-tonal" onPress={() => handleCaptureImage(setEmpTeamImage)}>
@@ -159,10 +156,6 @@ const TeamCheckout = () => {
             />
         </PaperProvider>
     )
-}
-
-const styles = StyleSheet.create({
-
-})
+};
 
 export default TeamCheckout;

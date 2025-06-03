@@ -39,8 +39,7 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "center",
-        paddingHorizontal: 10,
+        alignItems: "center"
     },
     touchableArea: {
         padding: 10,

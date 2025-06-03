@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, StatusBar } from 'react-native';
 import LoginScreen from './src/screen/LoginScreen';
 import HomeScreen from './src/screen/HomeScreen';
 import DataLoadingScreen from './src/screen/DataLoadingScreen';
@@ -25,6 +25,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons, FontAwesome6, AntDesign, Octicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -199,9 +200,18 @@ const AppNavigator = () => {
 };
 
 const App = () => (
-  <NavigationContainer>
-    <AppNavigator />
-  </NavigationContainer>
+  <>
+    <StatusBar
+      barStyle="light-content"
+      backgroundColor="#1e1e1e"
+      translucent={false}
+    />
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <AppNavigator />
+      </NavigationContainer>
+    </SafeAreaProvider>
+  </>
 );
 
 export default App;

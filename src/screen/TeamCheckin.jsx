@@ -5,7 +5,7 @@ import { GlobalStyles } from '../Styles/styles';
 import Header from '../components/Header';
 import { useNavigation } from '@react-navigation/native';
 import CheckinComponent from '../components/CheckinComponent';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TeamCheckin = ({ route }) => {
     const navigation = useNavigation();
@@ -42,34 +42,32 @@ const TeamCheckin = ({ route }) => {
         }
     };
     return (
-        <SafeAreaProvider>
-            <PaperProvider>
-                <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
-                    <Header title="Team Check-in" />
-                    
-                    <CheckinComponent
-                        entryDate={entryDate}
-                        setEntryDate={setEntryDate}
-                        entryTime={entryTime}
-                        setEntryTime={setEntryTime}
-                        projectNo={projectNo}
-                        projectName={projectName}
-                        empTeamImage={empTeamImage}
-                        setEmpTeamImage={setEmpTeamImage}
-                        coordinates={coordinates}
-                        setCoordinates={setCoordinates}
-                        locationName={locationName}
-                        setLocationName={setLocationName}
-                        onProjectSelect={handleProjectSelect} />
+        <PaperProvider>
+            <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
+                <Header title="Team Check-in" />
 
-                    <View style={GlobalStyles.bottomButtonContainer}>
-                        <Button mode="contained" onPress={handlenavToEmpPage}>
-                            Next
-                        </Button>
-                    </View>
+                <CheckinComponent
+                    entryDate={entryDate}
+                    setEntryDate={setEntryDate}
+                    entryTime={entryTime}
+                    setEntryTime={setEntryTime}
+                    projectNo={projectNo}
+                    projectName={projectName}
+                    empTeamImage={empTeamImage}
+                    setEmpTeamImage={setEmpTeamImage}
+                    coordinates={coordinates}
+                    setCoordinates={setCoordinates}
+                    locationName={locationName}
+                    setLocationName={setLocationName}
+                    onProjectSelect={handleProjectSelect} />
+
+                <View style={GlobalStyles.bottomButtonContainer}>
+                    <Button mode="contained" onPress={handlenavToEmpPage}>
+                        Next
+                    </Button>
                 </View>
-            </PaperProvider>
-        </SafeAreaProvider>
+            </View>
+        </PaperProvider>
     );
 };
 

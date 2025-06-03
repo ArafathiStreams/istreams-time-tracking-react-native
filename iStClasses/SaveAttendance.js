@@ -28,7 +28,7 @@ export const SaveAttendance = async ({
             PROJECT_LOCATION: locationName,
             EmpData: selectedEmp
         };
-        
+                
         const empAttendance = await callSoapService(GlobalVariables.Client_URL, 'AddAttendance', Attendance_parameters);
 
         if (Number.isInteger(empAttendance)) {

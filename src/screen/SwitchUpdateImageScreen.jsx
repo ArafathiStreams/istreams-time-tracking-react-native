@@ -6,8 +6,10 @@ import Header from '../components/Header';
 import GlobalVariables from '../../iStServices/GlobalVariables';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GlobalStyles } from '../Styles/styles';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SwitchUpdateImageScreen = () => {
+    const insets = useSafeAreaInsets();
     const [selectedSection, setSelectedSection] = useState('section1');
     const [employeeData, setEmployeeData] = useState();
 
@@ -27,7 +29,7 @@ const SwitchUpdateImageScreen = () => {
     }, []);
 
     return (
-        <View style={styles.container}>
+        <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
             <Header title="Update Image" />
             {/* Toggle Buttons */}
             <View style={styles.toggleContainer}>
@@ -83,14 +85,8 @@ const SwitchUpdateImageScreen = () => {
 export default SwitchUpdateImageScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        paddingTop: 30,
-        backgroundColor: '#fff',
-    },
     toggleContainer: {
         marginTop: 10,
-        marginHorizontal: 5,
         flexDirection: 'row',
         backgroundColor: '#fddde0',
         borderRadius: 25,

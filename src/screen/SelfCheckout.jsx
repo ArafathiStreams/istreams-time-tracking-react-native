@@ -13,10 +13,12 @@ import { formatDate, formatTime } from '../Utils/dataTimeUtils';
 import FaceDetectionModal from './FaceDetectionModal';
 import { ImageRecognition } from '../Utils/ImageRecognition';
 import ImageRecognitionResult from '../components/ImageRecognitionResult';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SelfCheckout = () => {
     const [isPopupVisible, setPopupVisible] = useState(false);
     const navigation = useNavigation();
+    const insets = useSafeAreaInsets();
     const [btnloading, setbtnLoading] = useState(false);
     const [entryDate, setEntryDate] = useState('');
     const [entryTime, setEntryTime] = useState('');
@@ -161,7 +163,7 @@ const SelfCheckout = () => {
     };
 
     return (
-        <View style={GlobalStyles.pageContainer}>
+        <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
             <Header title="Self Check-Out" />
 
             <View style={{ flex: 1 }}>

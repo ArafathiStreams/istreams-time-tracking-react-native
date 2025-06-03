@@ -14,20 +14,18 @@ export const loginBLL = async (username, password) => {
     };
 
     GlobalVariables.doConnectionParameter = doConn_parameters;
-    
+
     try {
         const Public_doConnResponse = await callSoapService(Public_ServiceURL, 'doConnection', doConn_parameters);
 
-        if (Public_doConnResponse === "SUCCESS") 
-        {
+        if (Public_doConnResponse === "SUCCESS") {
             const Public_GetServiceURL = await callSoapService(Public_ServiceURL, 'GetServiceURL_Local', doConn_parameters);
 
             GlobalVariables.Client_URL = Public_GetServiceURL;
-            
+
             const Client_doConnResponse = await callSoapService(GlobalVariables.Client_URL, 'doConnection', doConn_parameters);
 
-            if (Client_doConnResponse === "SUCCESS") 
-            {
+            if (Client_doConnResponse === "SUCCESS") {
                 name = username.split('@')[0];
 
                 const verify_Auth_parameters = {
@@ -37,11 +35,32 @@ export const loginBLL = async (username, password) => {
 
                 const Client_verifyAuth = await callSoapService(GlobalVariables.Client_URL, 'verifyauthentication', verify_Auth_parameters);
 
-                if (Client_verifyAuth === "Authetication passed") 
-                {
+                if (Client_verifyAuth === "Authetication passed") {
+                    const Client_companyCode = await callSoapService(GlobalVariables.Client_URL, 'General_Get_DefaultCompanyCode', '');
+
+                    GlobalVariables.CompanyCode = Client_companyCode;
+
+                    const branchCode_parameters = {
+                        CompanyCode: Client_companyCode,
+                    };
+
+                    const Client_branchCode = await callSoapService(GlobalVariables.Client_URL, 'General_Get_DefaultBranchCode', branchCode_parameters);
+
+                    GlobalVariables.BranchCode = Client_branchCode;
+
+                    const companyName_parameters = {
+                        CompanyCode: Client_companyCode,
+                        BranchCode: Client_branchCode,
+                    };
+
+                    const Client_companyName = await callSoapService(GlobalVariables.Client_URL, 'General_Get_DefaultCompanyName', companyName_parameters);
+
+                    GlobalVariables.CompanyName = Client_companyName;
+
                     const empDetails_parameters = {
                         userfirstname: name,
                     };
+
                     const Client_EmpDetails = await callSoapService(GlobalVariables.Client_URL, 'getemployeename_and_id', empDetails_parameters);
                     const parsedData = JSON.parse(Client_EmpDetails);
 
@@ -54,20 +73,20 @@ export const loginBLL = async (username, password) => {
                         EmpNo: GlobalVariables.EMP_NO,
                     };
                     try {
-                    const Client_EmpImage = await callSoapService(GlobalVariables.Client_URL, 'getEmpPic_bytearray_Medium', empImage_parameters);
-                    
-                    GlobalVariables.EMP_IMAGE_BASE64 = Client_EmpImage.trim();
+                        const Client_EmpImage = await callSoapService(GlobalVariables.Client_URL, 'getEmpPic_bytearray_Medium', empImage_parameters);
+
+                        GlobalVariables.EMP_IMAGE_BASE64 = Client_EmpImage.trim();
                     }
                     catch (error) {
                         GlobalVariables.EMP_IMAGE_BASE64 = null;
                     }
                     return Client_verifyAuth;
                 }
-                else{
+                else {
                     return Client_verifyAuth;
                 }
             }
-            else{
+            else {
                 return Client_doConnResponse;
             }
         }
