@@ -4,6 +4,8 @@ import { CameraView } from 'expo-camera';
 import * as FaceDetector from 'expo-face-detector';
 import { IconButton } from 'react-native-paper';
 import { clearImagePickerCache } from '../Utils/captureImageUtils';
+import * as FileSystem from 'expo-file-system';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 export default function FaceDetectionModal({ visible, onClose, onCaptureComplete }) {
     const [cameraType, setCameraType] = useState('front');
@@ -29,9 +31,12 @@ export default function FaceDetectionModal({ visible, onClose, onCaptureComplete
         setDetectionError(null);
 
         try {
-            await clearImagePickerCache(); 
-            
+            await clearImagePickerCache();
+
             const photo = await cameraRef.current.takePictureAsync({ quality: 0.1 });
+
+            const fileInfo = await FileSystem.getInfoAsync(photo.uri);
+            console.log('Image size in bytes:', fileInfo.size);
 
             const result = await FaceDetector.detectFacesAsync(photo.uri, {
                 mode: FaceDetector.FaceDetectorMode.fast,
@@ -41,8 +46,21 @@ export default function FaceDetectionModal({ visible, onClose, onCaptureComplete
 
             if (result?.faces?.length > 0) {
                 const face = result.faces[0];
+
+                const resizedPhoto = await ImageManipulator.manipulateAsync(
+                    photo.uri,
+                    [{ resize: { width: 300 } }], // Resize to width of 800px; height is auto-calculated to maintain aspect ratio
+                    { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+                );
+
+                console.log('Resized image URI:', resizedPhoto.uri);
+                console.log('New dimensions:', resizedPhoto.width, 'x', resizedPhoto.height);
+
+                const fileInfo = await FileSystem.getInfoAsync(resizedPhoto.uri);
+                console.log('Resized image size in bytes:', fileInfo.size);
+
                 onCaptureComplete({
-                    capturedImage: photo.uri
+                    capturedImage: resizedPhoto.uri
                 });
                 onClose();
             } else {
@@ -83,7 +101,7 @@ export default function FaceDetectionModal({ visible, onClose, onCaptureComplete
                     <View style={styles.closeFrame}>
                         <IconButton icon="close" iconColor="red" size={35} title="Cancel" onPress={onClose} />
                     </View>
-                    
+
                     <View style={styles.overlay}>
                         {isProcessing ? (
                             <Text style={styles.status}>Processing...</Text>

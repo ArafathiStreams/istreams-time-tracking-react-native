@@ -15,10 +15,10 @@ import { ImageRecognition } from '../Utils/ImageRecognition';
 import ImageRecognitionResult from '../components/ImageRecognitionResult';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const SelfCheckout = () => {
+const ProjectSelfCheckin = () => {
+    const insets = useSafeAreaInsets();
     const [isPopupVisible, setPopupVisible] = useState(false);
     const navigation = useNavigation();
-    const insets = useSafeAreaInsets();
     const [btnloading, setbtnLoading] = useState(false);
     const [entryDate, setEntryDate] = useState('');
     const [entryTime, setEntryTime] = useState('');
@@ -27,12 +27,12 @@ const SelfCheckout = () => {
     const [empTeamImage, setEmpTeamImage] = useState(null);
     const [coordinates, setCoordinates] = useState('');
     const [locationName, setLocationName] = useState('Fetching location...');
-    const [recogloading, setrecogLoading] = useState(false);
+    const [recogloading, setRecogLoading] = useState(false);
     const [matchingFaceNames, setMatchingFaceNames] = useState([]);
     const [cleanedMatchNames, setCleanedMatchNames] = useState([]);
     const [groupedData, setgroupedData] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
-    const TrackingStatus = 'checkout';
+    const TrackingStatus = 'checkin';
     const [base64Img, setBase64Img] = useState(null);
     const [selectedEmp, setSelectedEmp] = useState('');
     const [empNo, setEmpNo] = useState([]);
@@ -45,20 +45,20 @@ const SelfCheckout = () => {
         setProjectName(project.PROJECT_NAME);
     };
 
-    const convertUriToBase64 = async (uri) => {
-        return await FileSystem.readAsStringAsync(uri, {
-            encoding: FileSystem.EncodingType.Base64,
-        });
-    };
-
     const handleImageRecognition = async () => {
         await ImageRecognition(empTeamImage,
-            setrecogLoading,
+            setRecogLoading,
             setBase64Img,
             setMatchingFaceNames,
             setCleanedMatchNames,
             setgroupedData,
             setErrorMessage);
+    };
+
+    const convertUriToBase64 = async (uri) => {
+        return await FileSystem.readAsStringAsync(uri, {
+            encoding: FileSystem.EncodingType.Base64,
+        });
     };
 
     useEffect(() => {
@@ -92,13 +92,7 @@ const SelfCheckout = () => {
             if (hasNonMatchedFaces) {
                 setEmpNo([]);
                 setSelectedEmp(null);
-                navigation.navigate('FailureAnimationScreen', {
-                    message: 'No Employee Image Matched',
-                    details: 'Next employee please',
-                    returnTo: 'SelfCheckout'
-                });
-            }
-            else {
+            } else {
                 const extractedEmpNos = groupedData.flatMap(item => item.data.map(i => i.EMP_NO));
                 console.log("Extracted Employee Numbers:", extractedEmpNos);
                 setEmpNo(extractedEmpNos);
@@ -106,6 +100,7 @@ const SelfCheckout = () => {
             }
         }
     }, [groupedData]);
+
 
     useEffect(() => {
         if (
@@ -115,14 +110,19 @@ const SelfCheckout = () => {
             locationName &&
             selectedEmp?.length > 0
         ) {
-            SaveSelfCheckout();
+            SaveSelfCheckin();
             setAutosaveTriggered(true);
         }
     }, [empTeamImage, groupedData, locationName, selectedEmp]);
 
-    const SaveSelfCheckout = async () => {
+
+    const SaveSelfCheckin = async () => {
         if (!empTeamImage) {
             alert('Missing required data. Please ensure photo is captured.');
+            return;
+        }
+        if (!projectNo || !projectName) {
+            alert('Now Select Project Details to Continue.');
             return;
         }
         if (!selectedEmp || selectedEmp === null || selectedEmp === '') {
@@ -148,7 +148,7 @@ const SelfCheckout = () => {
                 selectedEmp: empData,
                 base64Img: base64Img,
                 navigation,
-                returnTo: 'SelfCheckout'
+                returnTo: ''
             });
         } catch (error) {
             setbtnLoading(false);
@@ -165,8 +165,7 @@ const SelfCheckout = () => {
 
     return (
         <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
-            <Header title="Self Check-Out" />
-
+            <Header title="Project Self Check-In" />
             <View style={{ flex: 1 }}>
                 <View style={GlobalStyles.locationContainer}>
                     <FontAwesome6Icon name="location-dot" size={20} color="#70706d" />
@@ -221,7 +220,7 @@ const SelfCheckout = () => {
                         placeholder="Enter Project Name" />
                 </View>
 
-                <View style={[GlobalStyles.camButtonContainer, { marginBottom: 10 }]}>
+                <View style={[GlobalStyles.camButtonContainer, { marginBottom: 10 }]} >
                     <Button icon={"reload"} mode="contained" title="Reload Page" onPress={reload} >Retry</Button>
                 </View>
 
@@ -240,14 +239,14 @@ const SelfCheckout = () => {
 
             <View style={GlobalStyles.bottomButtonContainer}>
                 <Button mode="contained"
-                    onPress={SaveSelfCheckout}
-                    loading={btnloading}
-                    disabled={btnloading}>
+                    onPress={SaveSelfCheckin}
+                    disabled={btnloading}
+                    loading={btnloading}>
                     Save
                 </Button>
             </View>
         </View>
-    );
-};
+    )
+}
 
-export default SelfCheckout;
+export default ProjectSelfCheckin;

@@ -8,10 +8,12 @@ import { GlobalStyles } from '../Styles/styles';
 import { ActivityIndicator, Button, Checkbox } from 'react-native-paper';
 import { SaveAttendance } from '../../iStClasses/SaveAttendance';
 import * as FileSystem from 'expo-file-system';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TeamCheckoutEmployees = () => {
     const navigation = useNavigation();
     const route = useRoute();
+    const insets = useSafeAreaInsets();
     const { projectNo, chosenCheckinDate, entryDate, entryTime, coordinates, locationName, empTeamImage } = route.params || {};
     const [btnloading, setbtnLoading] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -136,7 +138,7 @@ const TeamCheckoutEmployees = () => {
 
 
     return (
-        <View style={GlobalStyles.pageContainer}>
+        <View style={[GlobalStyles.pageContainer, {paddingTop: insets.top}]}>
             <Header title="Check-out Employees" />
 
             <View style={styles.employeeListContainer}>

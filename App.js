@@ -16,7 +16,10 @@ import CaptureImageScreen from './src/components/CaptureImageScreen';
 import SwitchUpdateImageScreen from './src/screen/SwitchUpdateImageScreen';
 import UpdateNonMatchedEmpScreen from './src/screen/UpdateNonMatchedEmpScreen';
 import ProfileScreen from './src/screen/ProfileScreen';
-import ImageDisplay from './src/screen/ImageDisplay'; ``
+import ViewAttendance from './src/screen/ViewAttendance';
+import AddOfcLocation from './src/screen/AddOfcLocation';
+import ImageDisplay from './src/screen/ImageDisplay'; 
+import ProjectSelfCheckin from './src/screen/ProjectSelfCheckin';
 import SuccessAnimationScreen from './src/Animations/SuccessAnimationScreen';
 import FailureAnimationScreen from './src/Animations/FailureAnimationScreen';
 import { NavigationContainer } from '@react-navigation/native';
@@ -175,6 +178,9 @@ const AppNavigator = () => {
           <Stack.Screen name="SwitchUpdateImageScreen" component={SwitchUpdateImageScreen} />
           <Stack.Screen name="UpdateNonMatchedEmpScreen" component={UpdateNonMatchedEmpScreen} />
           <Stack.Screen name="ImageDisplay" component={ImageDisplay} />
+          <Stack.Screen name="ViewAttendance" component={ViewAttendance} />
+          <Stack.Screen name="ProjectSelfCheckin" component={ProjectSelfCheckin} />
+          <Stack.Screen name="AddOfcLocation" component={AddOfcLocation} />
           <Stack.Screen
             name="SuccessAnimationScreen"
             component={SuccessAnimationScreen}

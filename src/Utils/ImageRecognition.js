@@ -25,7 +25,7 @@ export const ImageRecognition = async (
                 return 1000;
             }
         };
-
+        let uploadStartTime;
         const refNo = await getNextRefNo();
         setRecogLoading(true);
         const Username = GlobalVariables.Login_Username;
@@ -39,8 +39,9 @@ export const ImageRecognition = async (
         formData.append('RefNo', refNo);            // Example: 23
         formData.append('DomainName', Username);    // Example: 'gopi@demo.com'
 
-        // Make the POST request
         try {
+            uploadStartTime = Date.now();
+
             const response = await axios.post(
                 'http://23.105.135.231:8100/ImageMatching',
                 formData,
@@ -49,8 +50,16 @@ export const ImageRecognition = async (
                         'Content-Type': 'multipart/form-data',
                         'Accept': 'application/json',
                     },
+                    onUploadProgress: (progressEvent) => {
+                        if (progressEvent.total && progressEvent.loaded === progressEvent.total) {
+                            const uploadEndTime = Date.now();
+                            const uploadDuration = (uploadEndTime - uploadStartTime) / 1000;
+                            console.log(`Upload completed in ${uploadDuration.toFixed(2)} seconds`);
+                        }
+                    }
                 }
             );
+
         } catch (error) {
             console.error('Image recognition error:', error.response?.data || error.message);
         }

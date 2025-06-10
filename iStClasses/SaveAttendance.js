@@ -11,9 +11,11 @@ export const SaveAttendance = async ({
     selectedEmp,
     base64Img,
     navigation,
-    returnTo
+    returnTo,
+    officeLocation
 }) => {
     try {
+        console.log(officeLocation);
         const Attendance_parameters = {
             CompanyCode: GlobalVariables.CompanyCode,
             BranchCode: GlobalVariables.BranchCode,
@@ -49,7 +51,7 @@ export const SaveAttendance = async ({
                 navigation.navigate('SuccessAnimationScreen', {
                     message: 'Attendance Captured Successfully',
                     details: `Attendance Ref Batch No: ${empAttendance}`,
-                    returnTo: returnTo || 'AppTabs'
+                    returnTo: returnTo || 'AppTabs',
                 });
             }
         }

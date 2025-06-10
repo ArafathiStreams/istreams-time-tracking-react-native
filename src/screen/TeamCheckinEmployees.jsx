@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { Provider as PaperProvider, Button } from 'react-native-paper';
+import { Text, View, StyleSheet, FlatList } from 'react-native';
+import { Button } from 'react-native-paper';
 import Header from '../components/Header';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
@@ -12,10 +12,12 @@ import * as FileSystem from 'expo-file-system';
 import { SaveAttendance } from '../../iStClasses/SaveAttendance';
 import { ImageRecognition } from '../Utils/ImageRecognition';
 import ImageRecognitionResult from '../components/ImageRecognitionResult';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TeamCheckinEmployees = () => {
     const navigation = useNavigation();
     const route = useRoute();
+    const insets = useSafeAreaInsets();
     const [btnloading, setbtnLoading] = useState(false);
     const [loading, setLoading] = useState(false);
     const [base64Img, setBase64Img] = useState(null);
@@ -120,56 +122,61 @@ const TeamCheckinEmployees = () => {
     };
 
     return (
-        <PaperProvider>
-            <View style={GlobalStyles.pageContainer}>
-                <Header title="Add Check-in Employees" />
+        <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
+            <Header title="Add Check-in Employees" />
 
-                <View style={styles.projectContainer}>
-                    <Text style={[GlobalStyles.subtitle_2,{color: '#0685de'}]}> {projectNo}</Text>
-                    <Text style={GlobalStyles.subtitle}> {projectName}</Text>
-                </View>
-
-                <View style={[GlobalStyles.camButtonContainer, { marginBottom: 10 }]}>
-                    <Button icon={"reload"} mode="contained" title="Reload Page" onPress={reload} >Retry</Button>
-                </View>
-
-                <ImageRecognitionResult
-                    recogloading={recogloading}
-                    groupedData={groupedData}
-                />
-
-                <View style={GlobalStyles.camButtonContainer}>
-                    <Button
-                        icon="plus"
-                        mode="contained-tonal"
-                        onPress={() =>
-                            navigation.navigate('EmployeeList', {
-                                onSelect: async (employees) => {
-                                    await getEmpImage(employees);
-                                }
-                            })
-                        }
-                    >
-                        Add Employees
-                    </Button>
-                </View>
-
-            <Text style={[GlobalStyles.subtitle_2, {color: '#0685de'}]}>Selected Employees</Text>
-
-                <View style={{ flex: 1 }}>
-                    <EmployeeListCard loading={loading} selectedEmp={selectedEmp} />
-                </View>
-
-                <View style={GlobalStyles.bottomButtonContainer}>
-                    <Button mode="contained"
-                        onPress={SaveTeamCheckin}
-                        disabled={btnloading}
-                        loading={btnloading}>
-                        Save
-                    </Button>
-                </View>
+            <View style={styles.projectContainer}>
+                <Text style={[GlobalStyles.subtitle_2, { color: '#0685de' }]}> {projectNo}</Text>
+                <Text style={GlobalStyles.subtitle}> {projectName}</Text>
             </View>
-        </PaperProvider>
+
+            <View style={[GlobalStyles.camButtonContainer, { marginBottom: 10 }]}>
+                <Button icon={"reload"} mode="contained" title="Reload Page" onPress={reload} >Retry</Button>
+            </View>
+            
+            <FlatList
+                data={selectedEmp}
+                keyExtractor={(item) => item.EMP_NO}
+                ListHeaderComponent={
+                    <>
+                        <ImageRecognitionResult recogloading={recogloading} groupedData={groupedData} />
+
+                        <View style={GlobalStyles.camButtonContainer}>
+                            <Button
+                                icon="plus"
+                                mode="contained-tonal"
+                                onPress={() =>
+                                    navigation.navigate('EmployeeList', {
+                                        onSelect: async (employees) => {
+                                            await getEmpImage(employees);
+                                        }
+                                    })
+                                }
+                            >
+                                Add Employees
+                            </Button>
+                        </View>
+
+                        <Text style={[GlobalStyles.subtitle_2, { color: '#0685de' }]}>
+                            Selected Employees
+                        </Text>
+                    </>
+                }
+                renderItem={({ item }) => (
+                    <EmployeeListCard loading={loading} selectedEmp={[item]} />
+                )}
+                ListEmptyComponent={<Text style={{ padding: 10 }}>No employees selected.</Text>}
+            />
+
+            <View style={GlobalStyles.bottomButtonContainer}>
+                <Button mode="contained"
+                    onPress={SaveTeamCheckin}
+                    disabled={btnloading}
+                    loading={btnloading}>
+                    Save
+                </Button>
+            </View>
+        </View>
     )
 }
 

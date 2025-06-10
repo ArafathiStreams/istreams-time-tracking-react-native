@@ -4,7 +4,6 @@ import GlobalVariables from "../../iStServices/GlobalVariables";
 import Icon from 'react-native-vector-icons/Feather';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlobalStyles } from '../Styles/styles';
-import { StatusBar } from 'react-native';
 
 const ProfileScreen = () => {
   const insets = useSafeAreaInsets();

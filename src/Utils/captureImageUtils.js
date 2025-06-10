@@ -1,6 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
 import * as FileSystem from 'expo-file-system';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 export const handleCaptureImage = async (setImageCallback) => {
     try {
@@ -18,7 +19,18 @@ export const handleCaptureImage = async (setImageCallback) => {
 
         if (!result.canceled) {
             const imageUri = result.assets[0].uri;
-            setImageCallback(imageUri); 
+            const resizedPhoto = await ImageManipulator.manipulateAsync(
+                imageUri,
+                [{ resize: { width: 800 } }], // Resize to width of 800px; height is auto-calculated to maintain aspect ratio
+                { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+            );
+
+            console.log('Resized image URI:', resizedPhoto.uri);
+            console.log('New dimensions:', resizedPhoto.width, 'x', resizedPhoto.height);
+
+            const fileInfo = await FileSystem.getInfoAsync(resizedPhoto.uri);
+            console.log('Resized image size in bytes:', fileInfo.size);
+            setImageCallback(resizedPhoto.uri);
         }
     } catch (error) {
         Alert.alert(error, 'Something went wrong while picking the image.');
@@ -27,22 +39,17 @@ export const handleCaptureImage = async (setImageCallback) => {
 };
 
 export const clearImagePickerCache = async () => {
+    const folderUri = FileSystem.cacheDirectory + 'ExperienceData/%2540anonymous%252FiStreamsTimeTracking-88caeab8-90ad-4f94-b19e-6fa2dbb158eb/ImagePicker/';
+
     try {
-        const imagePickerFolder =
-            `${FileSystem.documentDirectory}../cache/ExperienceData/%2540anonymous%252FiStreamsTimeTracking-88caeab8-90ad-4f94-b19e-6fa2dbb158eb/`;
-
-        const folderInfo = await FileSystem.getInfoAsync(imagePickerFolder);
+        const folderInfo = await FileSystem.getInfoAsync(folderUri);
         if (folderInfo.exists && folderInfo.isDirectory) {
-            const files = await FileSystem.readDirectoryAsync(imagePickerFolder);
-
-            for (const file of files) {
-                const filePath = imagePickerFolder + file;
-                await FileSystem.deleteAsync(filePath, { idempotent: true });
-            }
+            await FileSystem.deleteAsync(folderUri, { idempotent: true });
+            console.log('✅ ImagePicker folder deleted successfully.');
         } else {
-            console.log('❌ ImagePicker folder does not exist or is not a directory.');
+            console.log('⚠️ Folder does not exist or is not a directory.');
         }
     } catch (error) {
-        console.error('❌ Failed to clear ImagePicker cache:', error);
+        console.error('❌ Failed to delete ImagePicker folder:', error);
     }
 };

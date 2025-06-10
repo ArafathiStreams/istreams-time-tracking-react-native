@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import ChangeEmpImageScreen from '../../src/screen/ChangeEmpImageScreen';
-import EmployeeAddComponent from '../components/EmployeeAddComponent';
 import Header from '../components/Header';
 import GlobalVariables from '../../iStServices/GlobalVariables';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { GlobalStyles } from '../Styles/styles';
 
 const UpdateNonMatchedEmpScreen = () => {
-    const [selectedSection, setSelectedSection] = useState('section1');
     const [employeeData, setEmployeeData] = useState();
+    const insets = useSafeAreaInsets();
 
     useEffect(() =>{
         const fetchEmployeeData = async () => {
@@ -26,7 +27,7 @@ const UpdateNonMatchedEmpScreen = () => {
     }, []);
 
     return (
-        <View style={styles.container}>
+        <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
             <Header title="Update Non-Matched Emp Image" />
 
             <ChangeEmpImageScreen />
@@ -35,50 +36,3 @@ const UpdateNonMatchedEmpScreen = () => {
 };
 
 export default UpdateNonMatchedEmpScreen;
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        paddingTop: 30,
-        backgroundColor: '#fff',
-    },
-    toggleContainer: {
-        marginTop: 10,
-        marginHorizontal: 5,
-        flexDirection: 'row',
-        backgroundColor: '#fddde0',
-        borderRadius: 25,
-        padding: 3,
-        alignSelf: 'center',
-    },
-    button: {
-        paddingVertical: 10,
-        paddingHorizontal: 25,
-        flex: 1,
-        alignItems: 'center',
-        borderRadius: 25,
-    },
-    leftButton: {
-        borderTopLeftRadius: 25,
-        borderBottomLeftRadius: 25,
-    },
-    rightButton: {
-        borderTopRightRadius: 25,
-        borderBottomRightRadius: 25,
-    },
-    activeButton: {
-        backgroundColor: '#f44336',
-    },
-    inactiveButton: {
-        backgroundColor: 'transparent',
-    },
-    text: {
-        fontWeight: 'bold',
-    },
-    activeText: {
-        color: '#fff',
-    },
-    inactiveText: {
-        color: '#999',
-    },
-});

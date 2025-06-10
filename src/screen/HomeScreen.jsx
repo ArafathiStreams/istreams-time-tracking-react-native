@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, BackHandler, Alert, Dimensions, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,11 +11,60 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useFocusEffect } from '@react-navigation/native';
 import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LocationService } from '../../iStServices/LocationService';
+import { resetGlobalVariables } from '../../iStServices/GlobalVariables';
+import SelfCheckinPopup from '../../Popup/SelfCheckinPopup';
 
 const HomeScreen = () => {
     const navigation = useNavigation();
     const [showPopup, setShowPopup] = useState(false);
     const insets = useSafeAreaInsets();
+    const [currentLocation, setCurrentLocation] = useState(null);
+    const [showSelfCheckinPopup, setShowSelfCheckinPopup] = useState(false);
+
+    // Get current location when component mounts
+    useEffect(() => {
+        const getLocation = async () => {
+            try {
+                let locationData = {
+                    name: '',
+                    coordinates: '',
+                    address: ''
+                };
+
+                const onLocationName = (name) => {
+                    locationData.name = name;
+                };
+
+                const onCoordinates = (coords) => {
+                    locationData.coordinates = coords;
+                };
+
+                const setAddress = (addr) => {
+                    locationData.address = addr;
+                };
+
+                await LocationService(onLocationName, onCoordinates, setAddress);
+
+                if (locationData.coordinates) {
+                    const updatedLocation = {
+                        name: locationData.name,
+                        coordinates: locationData.coordinates
+                    };
+
+                    setCurrentLocation(updatedLocation);
+
+                    await AsyncStorage.setItem('CURRENT_OFC_LOCATION', JSON.stringify(updatedLocation));
+                }
+
+                console.log(locationData.coordinates);
+            } catch (error) {
+                console.error('Error getting location:', error);
+            }
+        };
+
+        getLocation();
+    }, []);
 
     const handleDPImageCLick = () => {
         setShowPopup(!showPopup);
@@ -24,6 +73,7 @@ const HomeScreen = () => {
     const handleLogout = async () => {
         try {
             await AsyncStorage.clear();
+            resetGlobalVariables();
             Alert.alert('Logout Successful', 'You have been logged out.');
             navigation.replace('LoginScreen');
         } catch (error) {
@@ -40,7 +90,8 @@ const HomeScreen = () => {
     };
 
     const handleSelfCheckin = () => {
-        navigation.navigate('SelfCheckin');
+        //navigation.navigate('SelfCheckin');
+        setShowSelfCheckinPopup(true);
     };
 
     const handleSelfCheckout = () => {
@@ -51,10 +102,21 @@ const HomeScreen = () => {
         navigation.navigate('NewEmployeeAddScreen');
     };
 
+    const handleViewAttendance = () => {
+        navigation.navigate('ViewAttendance', { currentLocation });
+    };
+
     const handleChangeEmpImage = () => {
         navigation.navigate('SwitchUpdateImageScreen');
     };
 
+    const handleSelfCheckinSelection = (option) => {
+        if (option === 'office') {
+            navigation.navigate('SelfCheckin', { currentLocation });
+        } else if (option === 'project') {
+            navigation.navigate('ProjectSelfCheckin');
+        }
+    };
     const actions1 = [
         { icon: 'qrcode-scan', label: 'Team\nCheck-in', onPress: handleTeamCheckin },
         { icon: 'account-group', label: 'Team\nCheck-out', onPress: handleTeamCheckout },
@@ -65,14 +127,9 @@ const HomeScreen = () => {
     const actions2 = [
         { label: 'Add New Employee', icon: 'user-plus', onPress: handleAddEmployee },
         { label: 'Update Employee Image', icon: 'images', onPress: handleChangeEmpImage },
-        {
-            label: 'View Attendance', icon: 'users-viewfinder', onPress: () => {
-                console.log('Company Code:', GlobalVariables.CompanyCode);
-                console.log('Branch Code:', GlobalVariables.BranchCode);
-            }
-        },
+        { label: 'View Attendance', icon: 'users-viewfinder', onPress: handleViewAttendance },
         { label: 'Reports', icon: 'chart-bar', onPress: () => { } },
-        { label: 'Leave Request', icon: 'door-open', onPress: () => { } },
+        { label: 'Add Office Location', icon: 'door-open', onPress: () => { navigation.navigate('AddOfcLocation') } },
         { label: 'Leave Details', icon: 'file-alt', onPress: () => { } }
     ];
 
@@ -165,6 +222,12 @@ const HomeScreen = () => {
                         ))}
                     </View>
                 </View>
+
+                {/* Popup for Account Details and Logout */}
+                {showSelfCheckinPopup && (
+                    <SelfCheckinPopup visible={showSelfCheckinPopup} onClose={() => setShowSelfCheckinPopup(false)}
+                        onSelectOption={handleSelfCheckinSelection} />
+                )}
             </ScrollView>
         </View>
     );

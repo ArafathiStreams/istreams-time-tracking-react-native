@@ -24,11 +24,11 @@ const CheckinComponent = ({
     onProjectSelect,
 }) => {
     const [isPopupVisible, setPopupVisible] = useState(false);
-
+    const [address, setAddress] = useState('');
     const preferredCamera = ImagePicker.CameraType.back;
 
     useEffect(() => {
-        LocationService(setLocationName,setCoordinates);
+        LocationService(setLocationName,setCoordinates,setAddress);
 
         const now = new Date();
         setEntryDate(formatDate(now));

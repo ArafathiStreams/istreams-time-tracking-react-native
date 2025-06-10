@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, Checkbox, Searchbar } from 'react-native-paper';
 import Header from './Header';
 import { GlobalStyles } from '../Styles/styles';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const EmployeeList = () => {
     const [loading, setLoading] = useState(true);
@@ -12,7 +13,7 @@ const EmployeeList = () => {
     const [employees, setEmployees] = useState([]);
     const [checkedItems, setCheckedItems] = useState({});
     const [searchQuery, setSearchQuery] = useState('');
-
+    const insets = useSafeAreaInsets();
     const route = useRoute();
     const { onSelect } = route.params;
 
@@ -65,7 +66,7 @@ const EmployeeList = () => {
     });
 
     return (
-        <View style={styles.pageContainer}>
+        <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
             <Header title="Employee List" />
             {/* Search Input */}
             <Searchbar
@@ -131,11 +132,6 @@ const EmployeeList = () => {
 export default EmployeeList;
 
 const styles = StyleSheet.create({
-    pageContainer: {
-        flex: 1,
-        padding: 20,
-        justifyContent: 'center',
-    },
     container: {
         flexDirection: 'row',
         backgroundColor: '#dddddb',

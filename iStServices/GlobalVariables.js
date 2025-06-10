@@ -9,6 +9,19 @@ const GlobalVariables = {
     BranchCode : '',
     CompanyName : '',
     doConnectionParameter : '',
+    CurrentOfcLocation : '',
 };
 
 export default GlobalVariables;
+
+export function resetGlobalVariables() {
+    GlobalVariables.Client_URL = '';
+    GlobalVariables.Login_Username = '';
+    GlobalVariables.USER_NAME = '';
+    GlobalVariables.EMP_NO = '';
+    GlobalVariables.EMP_IMAGE_BASE64 = '';
+    GlobalVariables.CompanyCode = '';
+    GlobalVariables.BranchCode = '';
+    GlobalVariables.CompanyName = '';
+    GlobalVariables.doConnectionParameter = '';
+}

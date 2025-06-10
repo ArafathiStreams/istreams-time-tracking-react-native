@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { Provider as PaperProvider, Button } from 'react-native-paper';
+import { Button } from 'react-native-paper';
 import { GlobalStyles } from '../Styles/styles';
 import Header from '../components/Header';
 import { useNavigation } from '@react-navigation/native';
@@ -42,32 +42,30 @@ const TeamCheckin = ({ route }) => {
         }
     };
     return (
-        <PaperProvider>
-            <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
-                <Header title="Team Check-in" />
+        <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
+            <Header title="Team Check-in" />
 
-                <CheckinComponent
-                    entryDate={entryDate}
-                    setEntryDate={setEntryDate}
-                    entryTime={entryTime}
-                    setEntryTime={setEntryTime}
-                    projectNo={projectNo}
-                    projectName={projectName}
-                    empTeamImage={empTeamImage}
-                    setEmpTeamImage={setEmpTeamImage}
-                    coordinates={coordinates}
-                    setCoordinates={setCoordinates}
-                    locationName={locationName}
-                    setLocationName={setLocationName}
-                    onProjectSelect={handleProjectSelect} />
+            <CheckinComponent
+                entryDate={entryDate}
+                setEntryDate={setEntryDate}
+                entryTime={entryTime}
+                setEntryTime={setEntryTime}
+                projectNo={projectNo}
+                projectName={projectName}
+                empTeamImage={empTeamImage}
+                setEmpTeamImage={setEmpTeamImage}
+                coordinates={coordinates}
+                setCoordinates={setCoordinates}
+                locationName={locationName}
+                setLocationName={setLocationName}
+                onProjectSelect={handleProjectSelect} />
 
-                <View style={GlobalStyles.bottomButtonContainer}>
-                    <Button mode="contained" onPress={handlenavToEmpPage}>
-                        Next
-                    </Button>
-                </View>
+            <View style={GlobalStyles.bottomButtonContainer}>
+                <Button mode="contained" onPress={handlenavToEmpPage}>
+                    Next
+                </Button>
             </View>
-        </PaperProvider>
+        </View>
     );
 };
 
