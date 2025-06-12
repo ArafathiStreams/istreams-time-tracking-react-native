@@ -8,7 +8,7 @@ export default function SuccessAnimationScreen() {
   const navigation = useNavigation();
   const route = useRoute();
 
-  const { message, details, returnTo = 'AppTabs' } = route.params || {};
+  const { message, details, returnTo = 'BottomNavigation' } = route.params || {};
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 

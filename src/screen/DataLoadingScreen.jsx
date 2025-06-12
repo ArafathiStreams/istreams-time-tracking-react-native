@@ -21,7 +21,7 @@ const DataLoadingScreen = ({ navigation }) => {
       }
 
       // Navigate to the main app after tasks
-      navigation.replace('AppTabs');
+      navigation.replace('BottomNavigation');
     };
 
     runTasks();

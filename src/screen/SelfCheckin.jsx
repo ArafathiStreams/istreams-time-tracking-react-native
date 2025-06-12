@@ -54,36 +54,34 @@ const SelfCheckin = () => {
 
     // Location checking configuration
     const ALLOWED_DISTANCE = 10; // 5 meters
-    useFocusEffect(
-        useCallback(() => {
-            const fetchOfficeLocation = async () => {
-                setLocationLoading(true);
-                setPageAccessible(false);
-                setCanAccess(false);
+    const fetchOfficeLocation = useCallback(async () => {
+        setLocationLoading(true);
+        setPageAccessible(false);
+        setCanAccess(false);
 
-                try {
-                    const locationJson = await AsyncStorage.getItem('CURRENT_OFC_LOCATION');
-                    const officeLoc = locationJson ? JSON.parse(locationJson) : null;
-                    setOfficeLocation(officeLoc);
+        try {
+            const locationJson = await AsyncStorage.getItem('CURRENT_OFC_LOCATION');
+            const officeLoc = locationJson ? JSON.parse(locationJson) : null;
+            setOfficeLocation(officeLoc);
 
-                    if (!officeLoc && !isInitialLoad) {
-                        Alert.alert('Error', 'Office location data not available.');
-                    }
-                } catch (error) {
-                    console.error('Error fetching office location:', error);
-                    if (!isInitialLoad) {
-                        Alert.alert('Error', 'Unable to fetch office location.');
-                    }
-                    setOfficeLocation(null);
-                } finally {
-                    setLocationLoading(false);
-                    setIsInitialLoad(false); // Important: update this here after the first fetch
+            if (!officeLoc) {
+                if (!isInitialLoad) {
+                    Alert.alert('Error', 'Office location data not available.');
                 }
-            };
-
-            fetchOfficeLocation();
-        }, [])
-    );
+                return null;
+            }
+            return officeLoc;
+        } catch (error) {
+            console.error('Error fetching office location:', error);
+            if (!isInitialLoad) {
+                Alert.alert('Error', 'Unable to fetch office location.');
+            }
+            return null;
+        } finally {
+            setLocationLoading(false);
+            setIsInitialLoad(false);
+        }
+    }, [isInitialLoad]);
 
     // Function to calculate distance between two coordinates using Haversine formula
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -124,12 +122,10 @@ const SelfCheckin = () => {
         return { latitude: lat, longitude: lon };
     };
 
-    // Check location and distance
-    const checkLocationDistance = async () => {
-        if (!officeLocation) {
-            Alert.alert('Error', 'Office location data not available.');
-            setLocationLoading(false);
-            return;
+    // Modified checkLocationDistance to accept officeLoc as parameter
+    const checkLocationDistance = useCallback(async (officeLoc) => {
+        if (!officeLoc) {
+            return false;
         }
 
         try {
@@ -150,7 +146,7 @@ const SelfCheckin = () => {
 
             if (capturedCoordinates) {
                 const currentCoords = parseCoordinates(capturedCoordinates);
-                const officeCoords = parseCoordinates(officeLocation.coordinates);
+                const officeCoords = parseCoordinates(officeLoc.coordinates);
 
                 if (currentCoords.latitude !== 0 && currentCoords.longitude !== 0 &&
                     officeCoords.latitude !== 0 && officeCoords.longitude !== 0) {
@@ -169,6 +165,7 @@ const SelfCheckin = () => {
 
                     if (isWithinRange) {
                         setPageAccessible(true);
+                        return true;
                     } else {
                         Alert.alert(
                             'Access Denied',
@@ -176,9 +173,12 @@ const SelfCheckin = () => {
                             [
                                 {
                                     text: 'Try Again',
-                                    onPress: () => {
+                                    onPress: async () => {
                                         setLocationLoading(true);
-                                        checkLocationDistance();
+                                        const newOfficeLoc = await fetchOfficeLocation();
+                                        if (newOfficeLoc) {
+                                            await checkLocationDistance(newOfficeLoc);
+                                        }
                                     }
                                 },
                                 {
@@ -187,20 +187,24 @@ const SelfCheckin = () => {
                                 }
                             ]
                         );
+                        return false;
                     }
                 } else {
                     Alert.alert('Error', 'Invalid coordinates detected. Please try again.');
+                    return false;
                 }
             } else {
                 Alert.alert('Error', 'Unable to get location coordinates.');
+                return false;
             }
         } catch (error) {
             console.error('Error checking location:', error);
             Alert.alert('Error', 'Unable to get your current location. Please try again.');
+            return false;
         } finally {
             setLocationLoading(false);
         }
-    };
+    }, [fetchOfficeLocation, navigation]);
 
     const handleProjectSelect = (project) => {
         setProjectNo(project.PROJECT_NO);
@@ -228,15 +232,29 @@ const SelfCheckin = () => {
         checkLocationDistance();
     }, []);
 
-    // Initialize other data only if location is accessible
-    useEffect(() => {
-        if (pageAccessible) {
-            setShowFaceModal(true);
-            const now = new Date();
-            setEntryDate(formatDate(now));
-            setEntryTime(formatTime(now));
-        }
-    }, [pageAccessible]);
+    // Main initialization effect
+    useFocusEffect(
+        useCallback(() => {
+            const initialize = async () => {
+                const officeLoc = await fetchOfficeLocation();
+                if (officeLoc) {
+                    const isWithinRange = await checkLocationDistance(officeLoc);
+                    if (isWithinRange) {
+                        setShowFaceModal(true);
+                        const now = new Date();
+                        setEntryDate(formatDate(now));
+                        setEntryTime(formatTime(now));
+                    }
+                }
+            };
+
+            initialize();
+
+            return () => {
+                // Cleanup if needed
+            };
+        }, [fetchOfficeLocation, checkLocationDistance])
+    );
 
     const handleFaceCaptureComplete = (data) => {
         if (data?.capturedImage) {

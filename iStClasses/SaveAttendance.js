@@ -51,7 +51,7 @@ export const SaveAttendance = async ({
                 navigation.navigate('SuccessAnimationScreen', {
                     message: 'Attendance Captured Successfully',
                     details: `Attendance Ref Batch No: ${empAttendance}`,
-                    returnTo: returnTo || 'AppTabs',
+                    returnTo: returnTo || 'BottomNavigation',
                 });
             }
         }

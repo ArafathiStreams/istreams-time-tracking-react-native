@@ -19,12 +19,16 @@
       }
     },
     "android": {
+      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "CAMERA"
+        "CAMERA",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.INTERNET"
       ],
       "package": "com.mohammedarafath.iStreamsTimeTracking"
     },
@@ -39,6 +43,11 @@
           "cameraPermission": "Allow access to camera for face detection"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b820f726-98d8-45ca-8ea1-f4cb7583eb06"
+      }
+    }
   }
 }
