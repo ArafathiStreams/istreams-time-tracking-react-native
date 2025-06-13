@@ -2,6 +2,7 @@ import { callSoapService } from "../SoapRequest/callSoapService ";
 import GlobalVariables from "../iStServices/GlobalVariables";
 import config from "../config";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Device from 'expo-device';
 
 export const loginBLL = async (username, password) => {
     const Public_ServiceURL = config.API_BASE_URL;
@@ -65,6 +66,8 @@ export const loginBLL = async (username, password) => {
                             empImage = null;
                         }
 
+                        const android = Device.osInternalBuildId;
+
                         const userData = {
                             CompanyCode: Client_companyCode,
                             BranchCode: Client_branchCode,
@@ -72,12 +75,13 @@ export const loginBLL = async (username, password) => {
                             USER_NAME: Employee.USER_NAME,
                             EMP_NO: Employee.EMP_NO,
                             EMP_IMAGE_BASE64: empImage?.trim() ?? null,
+                            AndroidID: android
                         };
 
                         await saveToStorage('USER_DATA', userData);
                         await saveToStorage('INITIALIZED', true);
 
-                        Object.assign(GlobalVariables, userData); // Populate GlobalVariables
+                        Object.assign(GlobalVariables, userData); 
                     } else {
                         const userData = await loadFromStorage('USER_DATA');
                         if (userData) {

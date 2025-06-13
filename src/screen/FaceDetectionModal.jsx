@@ -39,10 +39,9 @@ export default function FaceDetectionModal({ visible, onClose, onCaptureComplete
                 return;
             }
             
-            const photo = await cameraRef.current.takePictureAsync({ quality: 0.1 });
+            const photo = await cameraRef.current.takePictureAsync({ quality: 0.7 });
 
             const fileInfo = await FileSystem.getInfoAsync(photo.uri);
-            console.log('Image size in bytes:', fileInfo.size);
 
             const result = await FaceDetector.detectFacesAsync(photo.uri, {
                 mode: FaceDetector.FaceDetectorMode.fast,

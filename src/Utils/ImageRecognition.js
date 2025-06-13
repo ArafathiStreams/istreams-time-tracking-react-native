@@ -1,6 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GlobalVariables from '../../iStServices/GlobalVariables';
+import { formatNormalDate, formatNormalTime } from './dataTimeUtils';
 
 export const ImageRecognition = async (
     empTeamImage,
@@ -12,28 +13,40 @@ export const ImageRecognition = async (
     setErrorMessage
 ) => {
     try {
+        const getDeviceID = async () => {
+            const deviceID = GlobalVariables.AndroidID;
+            if(!deviceID) {
+                const deviceID = GlobalVariables.USER_NAME;
+                return deviceID;
+            }
+            return deviceID;
+        }
         const getUniqueRefNo = async () => {
-            return Math.random().toString(36).substring(2, 10); 
-        };
+            const now = new Date();
+            const date = formatNormalDate(now);
+            const time = formatNormalTime(now);
 
-        let uploadStartTime;
+            const dateStr = date + time;
+
+            return dateStr;
+        }
+
         const refNo = await getUniqueRefNo();
-
+        const DEVICE_ID = await getDeviceID();
         setRecogLoading(true);
         const Username = GlobalVariables.Login_Username;
-
+        
         const formData = new FormData();
         formData.append('file', {
             uri: empTeamImage,
-            name: '3.jpeg',
+            name: 'uploaded_img.jpeg',
             type: 'image/jpeg'
         });
         formData.append('RefNo', refNo);
         formData.append('DomainName', Username);
+        formData.append('DeviceName', DEVICE_ID);
 
         try {
-            uploadStartTime = Date.now();
-
             const response = await axios.post(
                 'http://23.105.135.231:8100/ImageMatching',
                 formData,
@@ -44,7 +57,7 @@ export const ImageRecognition = async (
                     },
                 }
             );
-
+            
         } catch (error) {
             setErrorMessage('Image recognition error:', error.response?.data || error.message);
         }
@@ -55,9 +68,20 @@ export const ImageRecognition = async (
                 setErrorMessage(null);
 
                 const response = await fetch(
-                    `http://23.105.135.231:8082/api/View/get-folder-images/${domainPart}/${refNo}`
+                    `http://23.105.135.231:8082/api/View/get-folder-images/${domainPart}/${DEVICE_ID}/${refNo}`
                 );
-                const data = await response.json();
+
+                const text = await response.text();
+                if (!text) {
+                    throw new Error('Empty response received from image matching API.');
+                }
+
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (parseError) {
+                    throw new Error('Invalid JSON response received: ' + parseError.message);
+                }
 
                 let finalCombinedList = [];
 

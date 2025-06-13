@@ -15,3 +15,16 @@ export const formatDate = (date) => {
     return `${hours}:${minutes} ${ampm}`;
   };
   
+ export const formatNormalDate = (normaldate) => {
+    const day = String(normaldate.getDate()).padStart(2, '0');
+    const month = String(normaldate.getMonth() + 1).padStart(2, '0');
+    const year = normaldate.getFullYear();
+    return `${year}${month}${day}`; 
+};
+
+export const formatNormalTime = (normaldate) => {
+    const hours = String(normaldate.getHours()).padStart(2, '0');
+    const minutes = String(normaldate.getMinutes()).padStart(2, '0');
+    const seconds = String(normaldate.getSeconds()).padStart(2, '0');
+    return `${hours}${minutes}${seconds}`; 
+};

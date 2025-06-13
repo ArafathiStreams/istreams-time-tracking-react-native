@@ -56,8 +56,6 @@ const HomeScreen = () => {
 
                     await AsyncStorage.setItem('CURRENT_OFC_LOCATION', JSON.stringify(updatedLocation));
                 }
-
-                console.log(locationData.coordinates);
             } catch (error) {
                 console.error('Error getting location:', error);
             }
@@ -314,7 +312,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         backgroundColor: '#f0f8ff',
         borderRadius: 16,
-        marginBottom: 40
+        marginBottom: 60
     },
     container1: {
         flexDirection: 'row',

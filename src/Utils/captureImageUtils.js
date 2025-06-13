@@ -21,7 +21,7 @@ export const handleCaptureImage = async (setImageCallback) => {
             const imageUri = result.assets[0].uri;
             const resizedPhoto = await ImageManipulator.manipulateAsync(
                 imageUri,
-                [{ resize: { width: 800 } }], // Resize to width of 800px; height is auto-calculated to maintain aspect ratio
+                [{ resize: { width: 800 } }],
                 { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
             );
 
@@ -58,7 +58,6 @@ export const clearImagePickerCache = async () => {
         const manipulatorInfo = await FileSystem.getInfoAsync(imageManipulatorCache);
         if (manipulatorInfo.exists && manipulatorInfo.isDirectory) {
             await FileSystem.deleteAsync(imageManipulatorCache, { idempotent: true });
-            console.log('✅ ImageManipulator folder deleted successfully.');
         } else {
             console.log('⚠️ ImageManipulator folder does not exist or is not a directory.');
         }

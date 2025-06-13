@@ -12,10 +12,8 @@ export const SaveAttendance = async ({
     base64Img,
     navigation,
     returnTo,
-    officeLocation
 }) => {
     try {
-        console.log(officeLocation);
         const Attendance_parameters = {
             CompanyCode: GlobalVariables.CompanyCode,
             BranchCode: GlobalVariables.BranchCode,

@@ -9,6 +9,7 @@ const GlobalVariables = {
     CompanyName : '',
     doConnectionParameter : '',
     CurrentOfcLocation : '',
+    AndroidID : '',
 };
 
 export default GlobalVariables;
