@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, FlatList } from 'react-native';
+import { Text, View, StyleSheet, FlatList, Alert } from 'react-native';
 import { Button } from 'react-native-paper';
 import Header from '../components/Header';
 import { useRoute } from '@react-navigation/native';
@@ -81,6 +81,12 @@ const TeamCheckinEmployees = () => {
         }
     }, [empTeamImage]);
 
+    useEffect(() => {
+        if (errorMessage) {
+            Alert.alert('Error', errorMessage);
+        }
+    }, [errorMessage]);
+
     const convertUriToBase64 = async (uri) => {
         return await FileSystem.readAsStringAsync(uri, {
             encoding: FileSystem.EncodingType.Base64,
@@ -133,7 +139,7 @@ const TeamCheckinEmployees = () => {
             <View style={[GlobalStyles.camButtonContainer, { marginBottom: 10 }]}>
                 <Button icon={"reload"} mode="contained" title="Reload Page" onPress={reload} >Retry</Button>
             </View>
-            
+
             <FlatList
                 data={selectedEmp}
                 keyExtractor={(item) => item.EMP_NO}

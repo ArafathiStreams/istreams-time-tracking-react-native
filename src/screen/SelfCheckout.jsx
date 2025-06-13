@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, Alert } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
 import Header from '../components/Header';
 import { GlobalStyles } from '../Styles/styles';
@@ -84,6 +84,12 @@ const SelfCheckout = () => {
             handleImageRecognition();
         }
     }, [empTeamImage]);
+
+    useEffect(() => {
+        if (errorMessage) {
+            Alert.alert('Error', errorMessage);
+        }
+    }, [errorMessage]);
 
     useEffect(() => {
         if (groupedData && groupedData.length > 0) {

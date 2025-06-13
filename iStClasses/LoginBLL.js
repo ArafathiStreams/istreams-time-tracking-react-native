@@ -1,9 +1,10 @@
 import { callSoapService } from "../SoapRequest/callSoapService ";
 import GlobalVariables from "../iStServices/GlobalVariables";
+import config from "../config";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const loginBLL = async (username, password) => {
-
-    const Public_ServiceURL = GlobalVariables.Public_Service_URL;
+    const Public_ServiceURL = config.API_BASE_URL;
 
     GlobalVariables.Login_Username = username;
 
@@ -36,50 +37,54 @@ export const loginBLL = async (username, password) => {
                 const Client_verifyAuth = await callSoapService(GlobalVariables.Client_URL, 'verifyauthentication', verify_Auth_parameters);
 
                 if (Client_verifyAuth === "Authetication passed") {
-                    const Client_companyCode = await callSoapService(GlobalVariables.Client_URL, 'General_Get_DefaultCompanyCode', '');
+                    const alreadySetup = await loadFromStorage('INITIALIZED');
 
-                    GlobalVariables.CompanyCode = Client_companyCode;
+                    if (!alreadySetup) {
+                        const Client_companyCode = await callSoapService(GlobalVariables.Client_URL, 'General_Get_DefaultCompanyCode', '');
+                        const branchCode_parameters = { 
+                            CompanyCode: Client_companyCode 
+                        };
+                        const Client_branchCode = await callSoapService(GlobalVariables.Client_URL, 'General_Get_DefaultBranchCode', branchCode_parameters);
+                        const companyName_parameters = { 
+                            CompanyCode: Client_companyCode, BranchCode: Client_branchCode 
+                        };
+                        const Client_companyName = await callSoapService(GlobalVariables.Client_URL, 'General_Get_DefaultCompanyName', companyName_parameters);
+                        const empDetails_parameters = { 
+                            userfirstname: name 
+                        };
+                        const Client_EmpDetails = await callSoapService(GlobalVariables.Client_URL, 'getemployeename_and_id', empDetails_parameters);
+                        const parsedData = JSON.parse(Client_EmpDetails);
+                        const Employee = parsedData[0];
 
-                    const branchCode_parameters = {
-                        CompanyCode: Client_companyCode,
-                    };
+                        const empImage_parameters = { EmpNo: Employee.EMP_NO };
+                        let empImage = null;
 
-                    const Client_branchCode = await callSoapService(GlobalVariables.Client_URL, 'General_Get_DefaultBranchCode', branchCode_parameters);
+                        try {
+                            empImage = await callSoapService(GlobalVariables.Client_URL, 'getEmpPic_bytearray_Medium', empImage_parameters);
+                        } catch (error) {
+                            empImage = null;
+                        }
 
-                    GlobalVariables.BranchCode = Client_branchCode;
+                        const userData = {
+                            CompanyCode: Client_companyCode,
+                            BranchCode: Client_branchCode,
+                            CompanyName: Client_companyName,
+                            USER_NAME: Employee.USER_NAME,
+                            EMP_NO: Employee.EMP_NO,
+                            EMP_IMAGE_BASE64: empImage?.trim() ?? null,
+                        };
 
-                    const companyName_parameters = {
-                        CompanyCode: Client_companyCode,
-                        BranchCode: Client_branchCode,
-                    };
+                        await saveToStorage('USER_DATA', userData);
+                        await saveToStorage('INITIALIZED', true);
 
-                    const Client_companyName = await callSoapService(GlobalVariables.Client_URL, 'General_Get_DefaultCompanyName', companyName_parameters);
-
-                    GlobalVariables.CompanyName = Client_companyName;
-
-                    const empDetails_parameters = {
-                        userfirstname: name,
-                    };
-
-                    const Client_EmpDetails = await callSoapService(GlobalVariables.Client_URL, 'getemployeename_and_id', empDetails_parameters);
-                    const parsedData = JSON.parse(Client_EmpDetails);
-
-                    const Employee = parsedData[0];
-
-                    GlobalVariables.USER_NAME = Employee.USER_NAME;
-                    GlobalVariables.EMP_NO = Employee.EMP_NO;
-
-                    const empImage_parameters = {
-                        EmpNo: GlobalVariables.EMP_NO,
-                    };
-                    try {
-                        const Client_EmpImage = await callSoapService(GlobalVariables.Client_URL, 'getEmpPic_bytearray_Medium', empImage_parameters);
-
-                        GlobalVariables.EMP_IMAGE_BASE64 = Client_EmpImage.trim();
+                        Object.assign(GlobalVariables, userData); // Populate GlobalVariables
+                    } else {
+                        const userData = await loadFromStorage('USER_DATA');
+                        if (userData) {
+                            Object.assign(GlobalVariables, userData);
+                        }
                     }
-                    catch (error) {
-                        GlobalVariables.EMP_IMAGE_BASE64 = null;
-                    }
+
                     return Client_verifyAuth;
                 }
                 else {
@@ -99,6 +104,16 @@ export const loginBLL = async (username, password) => {
         return (error);
     }
 }
+
+const saveToStorage = async (key, value) => {
+    await AsyncStorage.setItem(key, JSON.stringify(value));
+};
+
+const loadFromStorage = async (key) => {
+    const value = await AsyncStorage.getItem(key);
+    return value ? JSON.parse(value) : null;
+};
+
 
 export default class EmployeeDetails {
     constructor({ USER_NAME, EMP_NO }) {

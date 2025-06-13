@@ -7,7 +7,7 @@ const SelfCheckinPopup = ({ visible, onClose, onSelectOption }) => {
         <Modal
             visible={visible}
             transparent
-            animationType="slide"
+            animationType="fade"
             onRequestClose={onClose}
         >
             <TouchableOpacity

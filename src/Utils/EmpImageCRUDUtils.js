@@ -4,7 +4,7 @@ import GlobalVariables from '../../iStServices/GlobalVariables.js';
 export const handleEmpImageUpload = async (avatar, empNo, setbtnLoading) => {
     setbtnLoading(true);
     const Username = GlobalVariables.Login_Username;
-    
+
     const formData = new FormData();
     formData.append('DomainName', Username);
     formData.append('EmpImageFile', {
@@ -24,7 +24,23 @@ export const handleEmpImageUpload = async (avatar, empNo, setbtnLoading) => {
                 },
             }
         );
-        
+
+        if (response.data.message === 'Already exists') {
+            const updateresponse = await axios.put(
+                `http://23.105.135.231:8082/api/EncodeImgToNpy/update`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+
+            if (updateresponse.data.status === 'Success') {
+                alert('Image Updated Successfully');
+            }
+        }
+
         if (response.data.status === 'Success') {
             alert('Image Uploaded Successfully');
         }
@@ -64,7 +80,7 @@ export const handleEmpImageView = async (
                 responseType: 'blob',
             }
         );
-        
+
         const blob = response.data;
         const reader = new FileReader();
 

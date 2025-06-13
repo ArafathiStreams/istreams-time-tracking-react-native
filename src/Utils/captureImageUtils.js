@@ -39,20 +39,20 @@ export const handleCaptureImage = async (setImageCallback) => {
 };
 
 export const clearImagePickerCache = async () => {
-    const folderUri = FileSystem.cacheDirectory + 'ExperienceData/%2540anonymous%252FiStreamsTimeTracking-88caeab8-90ad-4f94-b19e-6fa2dbb158eb/ImagePicker/';
+    // const folderUri = FileSystem.cacheDirectory + 'ExperienceData/%2540anonymous%252FiStreamsTimeTracking-88caeab8-90ad-4f94-b19e-6fa2dbb158eb/ImagePicker/';
     const imageManipulatorCache = FileSystem.cacheDirectory + 'ImageManipulator/';
 
-    try {
-        const folderInfo = await FileSystem.getInfoAsync(folderUri);
-        if (folderInfo.exists && folderInfo.isDirectory) {
-            await FileSystem.deleteAsync(folderUri, { idempotent: true });
-            console.log('✅ ImagePicker folder deleted successfully.');
-        } else {
-            console.log('⚠️ Folder does not exist or is not a directory.');
-        }
-    } catch (error) {
-        console.error('❌ Failed to delete ImagePicker folder:', error);
-    }
+    // try {
+    //     const folderInfo = await FileSystem.getInfoAsync(folderUri);
+    //     if (folderInfo.exists && folderInfo.isDirectory) {
+    //         await FileSystem.deleteAsync(folderUri, { idempotent: true });
+    //         console.log('✅ ImagePicker folder deleted successfully.');
+    //     } else {
+    //         console.log('⚠️ Folder does not exist or is not a directory.');
+    //     }
+    // } catch (error) {
+    //     console.error('❌ Failed to delete ImagePicker folder:', error);
+    // }
 
     try {
         const manipulatorInfo = await FileSystem.getInfoAsync(imageManipulatorCache);

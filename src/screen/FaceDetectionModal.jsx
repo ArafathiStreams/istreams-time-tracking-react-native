@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Modal } from 'react-native';
-import { CameraView } from 'expo-camera';
+import { Camera, CameraView } from 'expo-camera';
 import * as FaceDetector from 'expo-face-detector';
 import { IconButton } from 'react-native-paper';
 import { clearImagePickerCache } from '../Utils/captureImageUtils';
@@ -33,6 +33,12 @@ export default function FaceDetectionModal({ visible, onClose, onCaptureComplete
         try {
             await clearImagePickerCache();
 
+            const { status } = await Camera.requestCameraPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Permission Required', 'Camera access is needed to take a photo.');
+                return;
+            }
+            
             const photo = await cameraRef.current.takePictureAsync({ quality: 0.1 });
 
             const fileInfo = await FileSystem.getInfoAsync(photo.uri);

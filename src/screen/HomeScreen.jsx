@@ -73,6 +73,8 @@ const HomeScreen = () => {
     const handleLogout = async () => {
         try {
             await AsyncStorage.clear();
+            await AsyncStorage.removeItem('INITIALIZED');
+            await AsyncStorage.removeItem('USER_DATA');
             resetGlobalVariables();
             Alert.alert('Logout Successful', 'You have been logged out.');
             navigation.replace('LoginScreen');

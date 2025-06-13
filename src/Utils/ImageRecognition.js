@@ -1,7 +1,5 @@
-// ../Utils/ImageRecognition.js
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as FileSystem from 'expo-file-system';
 import GlobalVariables from '../../iStServices/GlobalVariables';
 
 export const ImageRecognition = async (
@@ -14,30 +12,24 @@ export const ImageRecognition = async (
     setErrorMessage
 ) => {
     try {
-        const getNextRefNo = async () => {
-            try {
-                const current = await AsyncStorage.getItem('refCounter');
-                let refNo = current ? parseInt(current, 10) : 1000;
-                await AsyncStorage.setItem('refCounter', (refNo + 1).toString());
-                return refNo;
-            } catch (error) {
-                console.error('Failed to get or set refCounter:', error);
-                return 1000;
-            }
+        const getUniqueRefNo = async () => {
+            return Math.random().toString(36).substring(2, 10); 
         };
+
         let uploadStartTime;
-        const refNo = await getNextRefNo();
+        const refNo = await getUniqueRefNo();
+
         setRecogLoading(true);
         const Username = GlobalVariables.Login_Username;
 
         const formData = new FormData();
         formData.append('file', {
-            uri: empTeamImage,       // Example: 'file:///storage/emulated/0/DCIM/Camera/IMG_1234.jpg'
-            name: '3.jpeg',          // Must include extension
-            type: 'image/jpeg'       // MIME type
+            uri: empTeamImage,
+            name: '3.jpeg',
+            type: 'image/jpeg'
         });
-        formData.append('RefNo', refNo);            // Example: 23
-        formData.append('DomainName', Username);    // Example: 'gopi@demo.com'
+        formData.append('RefNo', refNo);
+        formData.append('DomainName', Username);
 
         try {
             uploadStartTime = Date.now();
@@ -50,18 +42,11 @@ export const ImageRecognition = async (
                         'Content-Type': 'multipart/form-data',
                         'Accept': 'application/json',
                     },
-                    onUploadProgress: (progressEvent) => {
-                        if (progressEvent.total && progressEvent.loaded === progressEvent.total) {
-                            const uploadEndTime = Date.now();
-                            const uploadDuration = (uploadEndTime - uploadStartTime) / 1000;
-                            console.log(`Upload completed in ${uploadDuration.toFixed(2)} seconds`);
-                        }
-                    }
                 }
             );
 
         } catch (error) {
-            console.error('Image recognition error:', error.response?.data || error.message);
+            setErrorMessage('Image recognition error:', error.response?.data || error.message);
         }
 
         const fetchAndDisplayImages = async () => {
@@ -145,7 +130,7 @@ export const ImageRecognition = async (
         await fetchAndDisplayImages();
 
     } catch (error) {
-        console.error('Image recognition error:', error);
+        setErrorMessage('Image recognition error:', error);
         setRecogLoading(false);
     }
 };

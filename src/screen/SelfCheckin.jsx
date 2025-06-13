@@ -271,6 +271,12 @@ const SelfCheckin = () => {
     }, [empTeamImage]);
 
     useEffect(() => {
+        if (errorMessage) {
+            Alert.alert('Error', errorMessage);
+        }
+    }, [errorMessage]);
+
+    useEffect(() => {
         if (groupedData && groupedData.length > 0) {
             const hasNonMatchedFaces = groupedData.some(item => item.title === "Non-Matched Faces");
 
@@ -398,7 +404,7 @@ const SelfCheckin = () => {
         <View style={[GlobalStyles.pageContainer, { paddingTop: insets.top }]}>
             <Header title="Office Self Check-In" />
             <View style={{ flex: 1 }}>
-                <View style={GlobalStyles.locationContainer}>
+                <View style={[GlobalStyles.locationContainer, { flexDirection: 'row', alignItems: 'center' }]}>
                     <FontAwesome6Icon name="location-dot" size={20} color="#70706d" />
                     <Text style={[GlobalStyles.subtitle, { marginLeft: 5 }]}>{locationName}</Text>
                     {distance && (
